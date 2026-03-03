@@ -8,6 +8,6 @@ DATABASE_URL = os.getenv(
 
 engine = create_engine(DATABASE_URL, echo=False)
 
-
+#Registrar modelo
 def init_db():
     SQLModel.metadata.create_all(engine)

@@ -8,7 +8,8 @@ class AuthState(rx.State):
 
     usuario_logueado: dict | None = None
     error: str = ""
-
+    user_id: int = 0   # 👈 agregar esto
+    
     def login(self):
         usuario = autenticar_usuario(self.username, self.password)
 
@@ -24,6 +25,7 @@ class AuthState(rx.State):
         }
 
         self.error = ""
+        self.user_id = usuario.id   # 👈 guardar el id REAL
         return rx.redirect("/admin/dashboard")
 
     def logout(self):
