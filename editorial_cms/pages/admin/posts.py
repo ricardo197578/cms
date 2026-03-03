@@ -35,12 +35,25 @@ def posts():
         rx.foreach(
             PostState.posts,
             lambda post: rx.box(
-                rx.heading(post.titulo),
-                rx.text(post.contenido),
+                rx.vstack(
+                    rx.heading(post.titulo),
+                    rx.text(post.contenido),
+
+                    rx.button(
+                        "Eliminar",
+                        color_scheme="red",
+                        size="1",
+                        on_click=lambda: PostState.eliminar_post(post.id)
+                    ),
+
+                    spacing="2",
+                    align_items="start",
+                ),
                 border="1px solid #ddd",
                 padding="10px",
-            )
-        ),
+                border_radius="8px",
+    )
+)
     )
 
     return admin_layout(contenido)
