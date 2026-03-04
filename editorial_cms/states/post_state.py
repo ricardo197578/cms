@@ -31,9 +31,14 @@ class PostState(rx.State):
 
         self.cargar_posts()
 
+      
     def eliminar_post(self, post_id: int):
-        eliminar_post(post_id)
-        self.cargar_posts()
+
+        if AuthState.usuario_logueado["rol"] != "admin":
+            return
+
+        eliminar_post_service(post_id)
+        self.cargar_posts()    
     
     def set_editando(self, post_id: int):
         post = next(p for p in self.posts if p.id == post_id)

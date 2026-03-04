@@ -9,6 +9,7 @@ class AuthState(rx.State):
     usuario_logueado: dict | None = None
     error: str = ""
     user_id: int = 0   # 👈 agregar esto
+    user_role: str = ""   # 👈 AGREGA ESTA LÍNEA
     
     def login(self):
         usuario = autenticar_usuario(self.username, self.password)
@@ -23,6 +24,8 @@ class AuthState(rx.State):
             "username": usuario.username,
             "rol": usuario.rol,
         }
+
+        self.user_role = usuario.rol
 
         self.error = ""
         self.user_id = usuario.id   # 👈 guardar el id REAL

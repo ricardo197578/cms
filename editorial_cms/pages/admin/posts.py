@@ -55,12 +55,17 @@ def posts():
                             size="1",
                             on_click=lambda: PostState.set_editando(post.id)
                         ),
-                        rx.button(
-                            "Eliminar",
-                            color_scheme="red",
-                            size="1",
-                            on_click=lambda: PostState.eliminar_post(post.id)
+
+                        rx.cond(
+                            AuthState.usuario_logueado["rol"] == "admin",
+                            rx.button(
+                                "Eliminar",
+                                color_scheme="red",
+                                size="1",
+                                on_click=lambda: PostState.eliminar_post(post.id)
+                            )
                         ),
+
                         spacing="2",
                     ),
 
