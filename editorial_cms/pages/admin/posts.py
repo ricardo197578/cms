@@ -36,7 +36,7 @@ def posts():
         ),
         rx.button(
             "Guardar",
-            on_click=lambda: PostState.guardar_post(AuthState.user_id)
+            on_click=PostState.guardar_post
         )
         ),
 

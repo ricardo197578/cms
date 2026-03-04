@@ -8,9 +8,8 @@ class AuthState(rx.State):
 
     usuario_logueado: dict | None = None
     error: str = ""
-    user_id: int = 0   # 👈 agregar esto
-    user_role: str = ""   # 👈 AGREGA ESTA LÍNEA
-    
+    user_role: str = ""
+
     def login(self):
         usuario = autenticar_usuario(self.username, self.password)
 
@@ -26,17 +25,16 @@ class AuthState(rx.State):
         }
 
         self.user_role = usuario.rol
-
         self.error = ""
-        self.user_id = usuario.id   # 👈 guardar el id REAL
+
         return rx.redirect("/admin/dashboard")
 
     def logout(self):
         self.usuario_logueado = None
+        self.user_role = ""
         return rx.redirect("/admin/login")
 
     def check_auth(self):
-        # Protección de página
         if not self.usuario_logueado:
             return rx.redirect("/admin/login")
 
@@ -46,3 +44,10 @@ class AuthState(rx.State):
         if self.usuario_logueado:
             return self.usuario_logueado.get("username", "")
         return ""
+
+    # Obtener ID real desde sesión
+    @rx.var
+    def user_id(self) -> int | None:
+        if self.usuario_logueado:
+            return self.usuario_logueado.get("id")
+        return None
