@@ -6,8 +6,8 @@ from editorial_cms.pages.admin.dashboard import dashboard
 from editorial_cms.pages.index import index
 import editorial_cms.pages.admin.posts 
 import editorial_cms.models.post 
+import editorial_cms.pages.articulos
 
 init_db()
 
 app = rx.App()
-

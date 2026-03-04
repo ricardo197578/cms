@@ -1,8 +1,14 @@
 import reflex as rx
 
-@rx.page(
-    route="/",
-    on_load=lambda: rx.redirect("/admin/login")
-)
+@rx.page(route="/")
 def index():
-    return rx.box()
+    return rx.center(
+        rx.vstack(
+            rx.heading("Bienvenido al sitio"),
+            rx.text("Este contenido es público."),
+            rx.link("Ir a Artículos", href="/articulos"),
+            rx.link("Login Admin", href="/admin/login"),
+            spacing="4"
+        ),
+        padding="5em"
+    )
