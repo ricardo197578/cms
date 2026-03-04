@@ -25,9 +25,19 @@ def posts():
             on_change=PostState.set_contenido
         ),
 
+        
+
+        rx.cond(
+        PostState.editando_id,
+        rx.button(
+            "Actualizar",
+            color_scheme="blue",
+            on_click=PostState.actualizar_post
+        ),
         rx.button(
             "Guardar",
             on_click=lambda: PostState.guardar_post(AuthState.user_id)
+        )
         ),
 
         rx.divider(),
@@ -39,11 +49,19 @@ def posts():
                     rx.heading(post.titulo),
                     rx.text(post.contenido),
 
-                    rx.button(
-                        "Eliminar",
-                        color_scheme="red",
-                        size="1",
-                        on_click=lambda: PostState.eliminar_post(post.id)
+                    rx.hstack(
+                        rx.button(
+                            "Editar",
+                            size="1",
+                            on_click=lambda: PostState.set_editando(post.id)
+                        ),
+                        rx.button(
+                            "Eliminar",
+                            color_scheme="red",
+                            size="1",
+                            on_click=lambda: PostState.eliminar_post(post.id)
+                        ),
+                        spacing="2",
                     ),
 
                     spacing="2",
@@ -52,8 +70,8 @@ def posts():
                 border="1px solid #ddd",
                 padding="10px",
                 border_radius="8px",
-    )
-)
+            )
+        )
     )
 
     return admin_layout(contenido)

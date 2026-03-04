@@ -26,3 +26,12 @@ def eliminar_post(post_id: int):
         if post:
             session.delete(post)
             session.commit()    
+
+def actualizar_post(post_id: int, titulo: str, contenido: str):
+    with Session(engine) as session:
+        post = session.get(Post, post_id)
+        if post:
+            post.titulo = titulo
+            post.contenido = contenido
+            session.add(post)
+            session.commit()
