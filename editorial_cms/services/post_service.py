@@ -23,8 +23,8 @@ def obtener_posts():
 def obtener_posts_por_autor(autor_id: int):
     with Session(engine) as session:
         statement = select(Post).where(Post.autor_id == autor_id)
-        return session.exec(statement).all()
-
+        #return session.exec(statement).all()
+        return session.query(Post).filter(Post.id == int(post_id)).first()
 
 def obtener_post_por_id(post_id: int):
     with Session(engine) as session:

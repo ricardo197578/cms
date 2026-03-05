@@ -6,7 +6,8 @@ from editorial_cms.pages.admin.dashboard import dashboard
 from editorial_cms.pages.index import index
 import editorial_cms.pages.admin.posts 
 import editorial_cms.models.post 
-import editorial_cms.pages.articulos
+import editorial_cms.pages.public.articulos
+import editorial_cms.pages.public.articulo
 
 init_db()
 

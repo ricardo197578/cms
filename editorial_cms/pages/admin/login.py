@@ -7,6 +7,7 @@ def login():
     return rx.center(
         rx.vstack(
             rx.heading("Login Administrador"),
+            rx.link("← Volver", href="/"),
             rx.input(
                 placeholder="Usuario",
                 on_change=AuthState.set_username
@@ -23,5 +24,6 @@ def login():
             rx.text(AuthState.error, color="red"),
             spacing="4",
         ),
+        
         height="100vh",
     )
