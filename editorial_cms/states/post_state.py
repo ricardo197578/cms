@@ -10,6 +10,7 @@ from editorial_cms.services.post_service import (
     actualizar_post,
     obtener_post_por_id,
 )
+from editorial_cms.services.post_service import toggle_publicado
 
 
 class PostState(rx.State):
@@ -101,4 +102,9 @@ class PostState(rx.State):
         self.contenido = ""
         self.editando_id = None
 
+        await self.cargar_posts()
+
+    async def toggle_publicado(self, post_id: int):
+
+        toggle_publicado(post_id)
         await self.cargar_posts()

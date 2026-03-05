@@ -37,7 +37,8 @@ def posts():
         rx.button(
             "Guardar",
             on_click=PostState.guardar_post
-        )
+        ),
+
         ),
 
         rx.divider(),
@@ -54,6 +55,17 @@ def posts():
                             "Editar",
                             size="1",
                             on_click=lambda: PostState.set_editando(post.id)
+                        ),
+
+                        rx.button(
+                            rx.cond(
+                                post.publicado,
+                                "Despublicar",
+                                "Publicar"
+                            ),
+                            size="1",
+                            color_scheme="blue",
+                            on_click=lambda: PostState.toggle_publicado(post.id)
                         ),
 
                         rx.cond(

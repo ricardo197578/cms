@@ -23,8 +23,8 @@ def obtener_posts():
 def obtener_posts_por_autor(autor_id: int):
     with Session(engine) as session:
         statement = select(Post).where(Post.autor_id == autor_id)
-        #return session.exec(statement).all()
-        return session.query(Post).filter(Post.id == int(post_id)).first()
+        return session.exec(statement).all()
+
 
 def obtener_post_por_id(post_id: int):
     with Session(engine) as session:
@@ -47,3 +47,17 @@ def actualizar_post(post_id: int, titulo: str, contenido: str):
             post.contenido = contenido
             session.add(post)
             session.commit()
+
+
+def toggle_publicado(post_id: int):
+    with Session(engine) as session:
+        post = session.get(Post, post_id)
+        if post:
+            post.publicado = not post.publicado
+            session.add(post)
+            session.commit()
+
+def obtener_publicados():
+    with Session(engine) as session:
+        statement = select(Post).where(Post.publicado == True)
+        return session.exec(statement).all()
