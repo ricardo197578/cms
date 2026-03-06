@@ -4,43 +4,83 @@ from editorial_cms.states.public_state import PublicState
 
 @rx.page(
     route="/articulos",
-    # Carga solo los publicados
-    on_load=PublicState.cargar_publicados
+    on_load=[
+        PublicState.cargar_publicados,
+        PublicState.cargar_categorias_sidebar,
+    ],
 )
 def articulos():
 
     return rx.container(
-        rx.vstack(
-            rx.heading("Artículos"),
 
-            rx.cond(
-                PublicState.posts,
+        rx.hstack(
 
-                # 🔹 Si hay artículos
-                rx.foreach(
-                    PublicState.posts,
-                    lambda post: rx.box(
-                        rx.heading(post.titulo),
-                        rx.text(post.contenido[:120] + "..."),
-                        rx.link(
-                            "Leer más",
-                            href="/articulo/"+ post.slug,
-                            color="blue"
+            # 🔹 CONTENIDO PRINCIPAL
+            rx.box(
+                rx.vstack(
+                    rx.heading("Artículos", size="6"),
+                    rx.link("← Volver", href="/"),
+
+                    rx.cond(
+                        PublicState.posts,
+                        rx.foreach(
+                            PublicState.posts,
+                            lambda post: rx.box(
+                                rx.vstack(
+                                    rx.heading(post.titulo, size="4"),
+                                    rx.text(post.contenido[:120] + "..."),
+                                    rx.link(
+                                        "Leer más",
+                                        href="/articulo/" + post.slug,
+                                    ),
+                                    spacing="2",
+                                    align="start",
+                                ),
+                                padding="1em",
+                                border="1px solid #eee",
+                                border_radius="8px",
+                                width="100%",
+                            ),
                         ),
-                        rx.divider(),
-                        padding="1em",
-                        width="100%",
-                    )
-                ),
+                        rx.heading("No hay artículos publicados"),
+                    ),
 
-                # 🔹 Si NO hay artículos
-                rx.center(
-                    rx.heading("No hay artículos publicados")
+                    spacing="4",
+                    align="start",
+                    width="100%",
                 ),
+                width="70%",
             ),
 
-            rx.link("← Volver", href="/"),
-            spacing="4",
+            # 🔹 SIDEBAR
+            rx.box(
+                rx.vstack(
+                    rx.heading("Categorías", size="4"),
+
+                    rx.foreach(
+                        PublicState.categorias_sidebar,
+                        lambda cat: rx.hstack(
+                            rx.link(
+                                cat.nombre,
+                                href="/categoria/" + cat.slug,
+                            ),
+                            rx.spacer(),
+                            rx.badge(cat.cantidad),
+                            width="100%",
+                        ),
+                    ),
+
+                    spacing="3",
+                    align="start",
+                ),
+                width="30%",
+                padding_left="2em",
+            ),
+
+            align="start",
+            width="100%",
         ),
+
         padding="2em",
+        max_width="1100px",
     )

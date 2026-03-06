@@ -10,23 +10,45 @@ def articulo():
 
     return rx.cond(
         PublicState.post_actual,
-
         rx.container(
             rx.vstack(
 
-                # TÍTULO
-                rx.heading(
-                    PublicState.post_actual.titulo
+                # 🔹 BREADCRUMB
+                rx.hstack(
+                    rx.link("Inicio", href="/"),
+                    rx.text(">"),
+                    rx.cond(
+                        PublicState.post_actual.categoria,
+                        rx.link(
+                            PublicState.post_actual.categoria.nombre,
+                            href="/categoria/" + PublicState.post_actual.categoria.slug,
+                        ),
+                    ),
+                    rx.text(">"),
+                    rx.text(
+                        PublicState.post_actual.titulo,
+                        font_weight="bold",
+                    ),
+                    spacing="2",
+                    font_size="sm",
+                    color="gray",
                 ),
 
-                # CATEGORÍA (Badge clickeable)
+                rx.divider(),
+                rx.link("← Volver", href="/articulos"),
+                # 🔹 TÍTULO
+                rx.heading(
+                    PublicState.post_actual.titulo,
+                    size="6",
+                ),
+
+                # 🔹 BADGE CATEGORÍA
                 rx.cond(
                     PublicState.post_actual.categoria,
                     rx.link(
                         rx.badge(
                             PublicState.post_actual.categoria.nombre,
                             color_scheme="blue",
-                            variant="soft",
                         ),
                         href="/categoria/" + PublicState.post_actual.categoria.slug,
                     ),
@@ -34,23 +56,20 @@ def articulo():
 
                 rx.divider(),
 
-                # CONTENIDO
+                # 🔹 CONTENIDO
                 rx.text(
-                    PublicState.post_actual.contenido
+                    PublicState.post_actual.contenido,
+                    font_size="md",
                 ),
 
-                # VOLVER
-                rx.link(
-                    "← Volver",
-                    href="/articulos"
-                ),
+                
 
                 spacing="4",
+                align="start",
             ),
             padding="2em",
+            max_width="800px",
         ),
-
-        # SI NO EXISTE
         rx.center(
             rx.heading("Artículo no encontrado")
         )

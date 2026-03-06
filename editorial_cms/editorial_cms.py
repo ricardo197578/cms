@@ -6,8 +6,7 @@ from editorial_cms.pages.admin.login import login
 from editorial_cms.pages.admin.dashboard import dashboard
 import editorial_cms.pages.admin.posts
 
-from editorial_cms.pages.index import index
- 
+from editorial_cms.pages.index import index 
 import editorial_cms.models.post 
 import editorial_cms.pages.public.articulos
 import editorial_cms.pages.public.articulo

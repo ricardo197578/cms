@@ -1,35 +1,48 @@
 import reflex as rx
 from typing import Optional, List
 from editorial_cms.models.post import Post
+from editorial_cms.models.categoria_sidebar import CategoriaSidebar
+
 from editorial_cms.services.post_service import (
     obtener_post_por_id,
     obtener_publicados,
     obtener_post_por_slug,
     obtener_posts_por_categoria_slug,
 )
+
 from editorial_cms.services.category_service import (
     obtener_categoria_por_slug,
+    obtener_categorias_con_contador,
 )
 
 
 class PublicState(rx.State):
 
+    # 🔹 LISTADO GENERAL
     posts: List[Post] = []
+
+    # 🔹 DETALLE
     post_actual: Optional[Post] = None
 
-    # 🔹 NUEVO: para filtrado por categoría
+    # 🔹 SIDEBAR TIPADO CORRECTAMENTE
+    categorias_sidebar: List[CategoriaSidebar] = []
+
+    # 🔹 FILTRADO POR CATEGORÍA
     posts_categoria: List[Post] = []
     nombre_categoria_actual: str = ""
 
-    # 🔹 Cargar solo artículos publicados
+    # =========================
+    # CARGAS
+    # =========================
+
     async def cargar_publicados(self):
         self.posts = obtener_publicados()
 
-    # 🔹 Cargar artículo por slug
+    async def cargar_categorias_sidebar(self):
+        self.categorias_sidebar = obtener_categorias_con_contador()
+
     async def cargar_por_slug(self):
         slug = self.router.page.params.get("slug")
-
-        print("SLUG DESDE STATE:", slug)
 
         if not slug:
             self.post_actual = None
@@ -37,11 +50,8 @@ class PublicState(rx.State):
 
         self.post_actual = obtener_post_por_slug(slug)
 
-    # 🔹 NUEVO: cargar posts por categoría
     async def cargar_posts_por_categoria_slug(self):
         slug = self.router.page.params.get("slug")
-
-        print("CATEGORIA SLUG:", slug)
 
         if not slug:
             self.posts_categoria = []
@@ -57,7 +67,10 @@ class PublicState(rx.State):
             self.posts_categoria = []
             self.nombre_categoria_actual = ""
 
-    # 🔹 Ver detalle de artículo
+    # =========================
+    # NAVEGACIÓN
+    # =========================
+
     async def ver_post(self, post_id: int):
         try:
             post_id = int(post_id)

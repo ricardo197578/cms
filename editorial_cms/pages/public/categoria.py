@@ -18,6 +18,7 @@ def categoria():
             ),
 
             rx.divider(),
+            rx.link("← Volver", href="/articulos"),
 
             # 🔹 Listado de posts
             rx.foreach(
@@ -40,7 +41,7 @@ def categoria():
                 )
             ),
 
-            rx.link("← Volver", href="/articulos"),
+            
 
             spacing="4",
             align="start",
