@@ -4,6 +4,7 @@ from editorial_cms.models.post import Post
 from editorial_cms.services.post_service import (
     obtener_post_por_id,
     obtener_publicados,
+    obtener_post_por_slug,
 )
 
 
@@ -15,6 +16,17 @@ class PublicState(rx.State):
     # 🔹 Cargar solo artículos publicados
     async def cargar_publicados(self):
         self.posts = obtener_publicados()
+
+    async def cargar_por_slug(self):
+        slug = self.router.page.params.get("slug")
+
+        print("SLUG DESDE STATE:", slug)
+
+        if not slug:
+            self.post_actual = None
+            return
+
+        self.post_actual = obtener_post_por_slug(slug)
 
     # 🔹 Ver detalle de artículo
     async def ver_post(self, post_id: int):

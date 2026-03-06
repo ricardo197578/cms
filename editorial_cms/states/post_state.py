@@ -17,6 +17,7 @@ class PostState(rx.State):
 
     titulo: str = ""
     contenido: str = ""
+    categoria_id: str = ""
 
     posts: List[Post] = []
     editando_id: int | None = None
@@ -48,11 +49,11 @@ class PostState(rx.State):
         if not auth.user_id:
             return
 
-        crear_post(self.titulo, self.contenido, auth.user_id)
+        crear_post(self.titulo, self.contenido, auth.user_id,int(self.categoria_id))
 
         self.titulo = ""
         self.contenido = ""
-
+        
         await self.cargar_posts()
 
     # 🔹 Eliminar (solo admin)

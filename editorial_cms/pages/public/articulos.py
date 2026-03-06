@@ -4,6 +4,7 @@ from editorial_cms.states.public_state import PublicState
 
 @rx.page(
     route="/articulos",
+    # Carga solo los publicados
     on_load=PublicState.cargar_publicados
 )
 def articulos():
@@ -21,10 +22,10 @@ def articulos():
                     lambda post: rx.box(
                         rx.heading(post.titulo),
                         rx.text(post.contenido[:120] + "..."),
-                        rx.button(
+                        rx.link(
                             "Leer más",
-                            on_click=lambda id=post.id: PublicState.ver_post(id),
-                            color_scheme="blue"
+                            href="/articulo/"+ post.slug,
+                            color="blue"
                         ),
                         rx.divider(),
                         padding="1em",

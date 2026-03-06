@@ -8,6 +8,8 @@ import editorial_cms.pages.admin.posts
 import editorial_cms.models.post 
 import editorial_cms.pages.public.articulos
 import editorial_cms.pages.public.articulo
+from editorial_cms.services.post_service import obtener_post_por_slug
+import editorial_cms.models
 
 init_db()
 

@@ -1,18 +1,23 @@
 from sqlmodel import Session, select
 from editorial_cms.database import engine
 from editorial_cms.models.post import Post
+import re
 
-
-def crear_post(titulo, contenido, autor_id):
+def crear_post(titulo, contenido, autor_id, categoria_id):
     with Session(engine) as session:
+
+        slug = generar_slug_unico(titulo)
+
         nuevo = Post(
             titulo=titulo,
+            slug=slug,
             contenido=contenido,
-            autor_id=autor_id
+            autor_id=autor_id,
+            categoria_id=categoria_id
         )
+
         session.add(nuevo)
         session.commit()
-
 
 def obtener_posts():
     with Session(engine) as session:
@@ -61,3 +66,41 @@ def obtener_publicados():
     with Session(engine) as session:
         statement = select(Post).where(Post.publicado == True)
         return session.exec(statement).all()
+    
+def generar_slug_base(titulo: str) -> str:
+    slug = titulo.lower()
+    slug = re.sub(r"[^\w\s-]", "", slug)
+    slug = re.sub(r"\s+", "-", slug)
+    return slug
+
+
+def generar_slug_unico(titulo: str) -> str:
+    slug_base = generar_slug_base(titulo)
+    slug = slug_base
+    contador = 1
+
+    with Session(engine) as session:
+        while True:
+            statement = select(Post).where(Post.slug == slug)
+            existe = session.exec(statement).first()
+
+            if not existe:
+                break
+
+            slug = f"{slug_base}-{contador}"
+            contador += 1
+
+    return slug
+
+def obtener_post_por_slug(slug: str):
+    with Session(engine) as session:
+        statement = select(Post).where(Post.slug == slug)
+        return session.exec(statement).first()
+    
+def obtener_posts_por_categoria(categoria_id: int):
+    with Session(engine) as session:
+        return session.exec(
+            select(Post)
+            .where(Post.categoria_id == categoria_id)
+            .where(Post.publicado == True)
+        ).all()

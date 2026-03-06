@@ -2,6 +2,7 @@ import reflex as rx
 from editorial_cms.states.auth_state import AuthState
 from editorial_cms.states.post_state import PostState
 from editorial_cms.components.admin_layout import admin_layout
+from editorial_cms.services.category_service import obtener_categorias
 
 
 @rx.page(
@@ -12,6 +13,23 @@ def posts():
 
     contenido = rx.vstack(
         rx.heading("Gestión de Artículos"),
+
+        rx.select.root(
+            rx.select.trigger(
+                placeholder="Seleccionar categoría",
+                width="300px"
+            ),
+            rx.select.content(
+                *[
+                    rx.select.item(
+                        cat.nombre,
+                        value=str(cat.id)
+                    )
+                    for cat in obtener_categorias()
+                ]
+            ),
+            on_change=PostState.set_categoria_id
+        ),
 
         rx.input(
             placeholder="Título",
