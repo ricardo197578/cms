@@ -1,32 +1,50 @@
 import reflex as rx
-from editorial_cms.services.category_service import obtener_categoria_por_slug
-from editorial_cms.services.post_service import obtener_posts_por_categoria
+from editorial_cms.states.public_state import PublicState
 
 
-@rx.page(route="/categoria/[slug]")
-def categoria(slug: str):
-
-    categoria = obtener_categoria_por_slug(slug)
-
-    if not categoria:
-        return rx.center(rx.heading("Categoría no encontrada"))
-
-    posts = obtener_posts_por_categoria(categoria.id)
+@rx.page(
+    route="/categoria/[slug]",
+    on_load=PublicState.cargar_posts_por_categoria_slug,
+)
+def categoria():
 
     return rx.container(
         rx.vstack(
-            rx.heading(categoria.nombre),
+
+            # 🔹 Título categoría
+            rx.heading(
+                "Categoría: " + PublicState.nombre_categoria_actual,
+                size="6",
+            ),
+
+            rx.divider(),
+
+            # 🔹 Listado de posts
             rx.foreach(
-                posts,
+                PublicState.posts_categoria,
                 lambda post: rx.box(
-                    rx.heading(post.titulo),
-                    rx.link(
-                        "Leer más",
-                        href=f"/articulo/{post.slug}",
-                        color="blue"
+                    rx.vstack(
+                        rx.heading(post.titulo, size="4"),
+                        rx.text(post.contenido[:120] + "..."),
+                        rx.link(
+                            "Leer más",
+                            href=f"/articulo/{post.slug}",
+                        ),
+                        spacing="2",
+                        align="start",
                     ),
-                    rx.divider()
+                    padding="1em",
+                    border="1px solid #eee",
+                    border_radius="8px",
+                    width="100%",
                 )
-            )
-        )
+            ),
+
+            rx.link("← Volver", href="/articulos"),
+
+            spacing="4",
+            align="start",
+            width="100%",
+        ),
+        padding="2em",
     )

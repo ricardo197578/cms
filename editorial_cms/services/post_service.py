@@ -1,6 +1,8 @@
+from sqlalchemy.orm import selectinload
 from sqlmodel import Session, select
 from editorial_cms.database import engine
 from editorial_cms.models.post import Post
+from editorial_cms.models.category import Category
 import re
 
 def crear_post(titulo, contenido, autor_id, categoria_id):
@@ -94,7 +96,11 @@ def generar_slug_unico(titulo: str) -> str:
 
 def obtener_post_por_slug(slug: str):
     with Session(engine) as session:
-        statement = select(Post).where(Post.slug == slug)
+        statement = (
+            select(Post)
+            .where(Post.slug == slug)
+            .options(selectinload(Post.categoria))
+        )
         return session.exec(statement).first()
     
 def obtener_posts_por_categoria(categoria_id: int):
@@ -104,3 +110,14 @@ def obtener_posts_por_categoria(categoria_id: int):
             .where(Post.categoria_id == categoria_id)
             .where(Post.publicado == True)
         ).all()
+    
+def obtener_posts_por_categoria_slug(slug: str):
+    with Session(engine) as session:
+        statement = (
+            select(Post)
+            .join(Category)
+            .where(Category.slug == slug)
+            .where(Post.publicado == True)
+            .options(selectinload(Post.categoria))
+        )
+        return session.exec(statement).all()
