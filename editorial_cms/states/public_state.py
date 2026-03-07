@@ -1,9 +1,9 @@
 import reflex as rx
-from typing import Optional, List
+from typing import Optional, List, Dict, Any
 from editorial_cms.models.post import Post
 from editorial_cms.models.categoria_sidebar import CategoriaSidebar
 from editorial_cms.services.post_service import obtener_recientes
-
+from editorial_cms.models.post_public import PostPublic
 
 from editorial_cms.services.post_service import (
     obtener_post_por_id,
@@ -21,7 +21,8 @@ from editorial_cms.services.category_service import (
 class PublicState(rx.State):
 
     # 🔹 LISTADO GENERAL
-    posts: List[Post] = []
+    
+    posts: List[PostPublic] = []
 
     # 🔹 DETALLE
     post_actual: Optional[Post] = None
@@ -46,10 +47,16 @@ class PublicState(rx.State):
     async def cargar_publicados(self):
         posts_db = obtener_publicados()
 
-        for post in posts_db:
-            post.fecha_publicacion = post.fecha_publicacion.strftime("%d/%m/%Y")
-
-        self.posts = posts_db
+        self.posts = [
+            PostPublic(
+                id=post.id,
+                titulo=post.titulo,
+                slug=post.slug,
+                contenido=post.contenido,
+                fecha_publicacion=post.fecha_publicacion.strftime("%d/%m/%Y"),
+            )
+            for post in posts_db
+        ]
 
     async def cargar_categorias_sidebar(self):
         self.categorias_sidebar = obtener_categorias_con_contador()

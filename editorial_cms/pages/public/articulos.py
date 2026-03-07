@@ -30,7 +30,7 @@ def articulos():
                                 rx.vstack(                                                                                                       
                                     rx.heading(post.titulo, size="4"),
                                     rx.text(
-                                        post.fecha_publicacion,
+                                        post["fecha_publicacion"],
                                         font_size="sm",
                                         color="gray",
                                     ),
