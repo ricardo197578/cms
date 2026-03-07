@@ -19,3 +19,7 @@ class Post(SQLModel, table=True):
 
     categoria_id: Optional[int] = Field(default=None, foreign_key="category.id")
     categoria: Optional[Category] = Relationship(back_populates="posts")
+    
+    fecha_publicacion: datetime = Field(default_factory=datetime.utcnow)
+
+    

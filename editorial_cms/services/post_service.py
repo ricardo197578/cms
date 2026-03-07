@@ -69,6 +69,14 @@ def obtener_publicados():
         statement = select(Post).where(Post.publicado == True)
         return session.exec(statement).all()
     
+def obtener_publicados():
+    with Session(engine) as session:
+        return session.exec(
+            select(Post)
+            .where(Post.publicado == True)
+            .order_by(Post.fecha_publicacion.desc())
+        ).all()
+    
 def generar_slug_base(titulo: str) -> str:
     slug = titulo.lower()
     slug = re.sub(r"[^\w\s-]", "", slug)
@@ -121,3 +129,12 @@ def obtener_posts_por_categoria_slug(slug: str):
             .options(selectinload(Post.categoria))
         )
         return session.exec(statement).all()
+    
+def obtener_recientes(limit: int = 5):
+    with Session(engine) as session:
+        return session.exec(
+            select(Post)
+            .where(Post.publicado == True)
+            .order_by(Post.fecha_publicacion.desc())
+            .limit(limit)
+        ).all()

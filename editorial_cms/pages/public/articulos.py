@@ -7,6 +7,7 @@ from editorial_cms.states.public_state import PublicState
     on_load=[
         PublicState.cargar_publicados,
         PublicState.cargar_categorias_sidebar,
+        PublicState.cargar_recientes,
     ],
 )
 def articulos():
@@ -20,15 +21,21 @@ def articulos():
                 rx.vstack(
                     rx.heading("Artículos", size="6"),
                     rx.link("← Volver", href="/"),
-
+                    
                     rx.cond(
                         PublicState.posts,
                         rx.foreach(
                             PublicState.posts,
                             lambda post: rx.box(
-                                rx.vstack(
+                                rx.vstack(                                                                                                       
                                     rx.heading(post.titulo, size="4"),
-                                    rx.text(post.contenido[:120] + "..."),
+                                    rx.text(
+                                        post.fecha_publicacion,
+                                        font_size="sm",
+                                        color="gray",
+                                    ),
+                                    rx.text(post.contenido[:120] + "..."),   
+
                                     rx.link(
                                         "Leer más",
                                         href="/articulo/" + post.slug,
@@ -55,6 +62,19 @@ def articulos():
             # 🔹 SIDEBAR
             rx.box(
                 rx.vstack(
+                    rx.heading("Recientes", size="4"),
+
+                    rx.foreach(
+                        PublicState.recientes,
+                        lambda post: rx.link(
+                            post.titulo,
+                            href="/articulo/" + post.slug,
+                            font_size="sm",
+                        ),
+                    ),
+
+                    rx.divider(),
+                    
                     rx.heading("Categorías", size="4"),
 
                     rx.foreach(
