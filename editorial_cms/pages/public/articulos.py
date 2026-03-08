@@ -83,11 +83,13 @@ def articulos():
                             rx.button(
                                 "← Anterior",
                                 on_click=PublicState.pagina_anterior,
+                                is_disabled=~PublicState.puede_ir_atras,
                             ),
                             rx.text("Página " + PublicState.page.to_string()),
                             rx.button(
                                 "Siguiente →",
                                 on_click=PublicState.siguiente_pagina,
+                                is_disabled=~PublicState.puede_ir_adelante,
                             ),
                             spacing="4",
                         ),    

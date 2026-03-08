@@ -21,6 +21,7 @@ from editorial_cms.services.post_service import buscar_posts_por_titulo
 
 from editorial_cms.services.post_service import buscar_posts
 from editorial_cms.services.post_service import contar_posts
+from urllib.parse import parse_qs, urlparse
 
 class PublicState(rx.State):
 
@@ -171,11 +172,17 @@ class PublicState(rx.State):
     
     async def set_busqueda(self, value: str):
         self.busqueda = value
+        self.page = 1
+        return rx.redirect("/articulos?page=1")
         await self.aplicar_filtros()
+        
 
     async def set_categoria(self, slug: str):
         self.categoria_activa = slug
+        self.page = 1
+        return rx.redirect("/articulos?page=1")
         await self.aplicar_filtros()
+        
 
     async def limpiar_busqueda(self):
         self.busqueda = ""
@@ -187,14 +194,26 @@ class PublicState(rx.State):
         if self.page < self.total_paginas:
             self.page += 1
             await self.aplicar_filtros()
-
+            return rx.redirect(f"/articulos?page={self.page}")
 
     async def pagina_anterior(self):
         if self.page > 1:
             self.page -= 1
             await self.aplicar_filtros()
+            return rx.redirect(f"/articulos?page={self.page}")
 
+    
     async def resetear_paginacion(self):
-        self.page = 1
-        await self.aplicar_filtros()
 
+        url = self.router.url
+        parsed = urlparse(url)
+        query_dict = parse_qs(parsed.query)
+
+        page_param = query_dict.get("page", ["1"])[0]
+
+        try:
+            self.page = int(page_param)
+        except:
+            self.page = 1
+
+        await self.aplicar_filtros()
