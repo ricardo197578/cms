@@ -17,6 +17,10 @@ from editorial_cms.services.category_service import (
     obtener_categorias_con_contador,
 )
 
+from editorial_cms.services.post_service import buscar_posts_por_titulo
+
+from editorial_cms.services.post_service import buscar_posts
+from editorial_cms.services.post_service import contar_posts
 
 class PublicState(rx.State):
 
@@ -35,7 +39,46 @@ class PublicState(rx.State):
     nombre_categoria_actual: str = ""
 
     recientes: List[Post] = []
+    # para buscar en bd por articulo
+    busqueda: str = ""
 
+    #estado para categoria activa
+    
+    categoria_activa: str = ""
+    
+    #paginacion
+    page: int = 1
+    per_page: int = 5
+
+    total_posts: int = 0
+
+    #propiedad computada para mostrar leyenda de resultado de busqueda
+    @rx.var
+    def mostrando_resultados(self)->bool:
+        return bool(self.busqueda)
+    
+    #var para resaltar categoria activa
+    @rx.var
+    def hay_categoria_activa(self)->bool:
+        return bool(self.categoria_activa)
+    
+     #VARIABLES COMPUTADAS 
+    @rx.var
+    def total_paginas(self) -> int:
+        if self.total_posts == 0:
+            return 1
+        return (self.total_posts + self.per_page - 1) // self.per_page
+
+
+    @rx.var
+    def puede_ir_atras(self) -> bool:
+        return self.page > 1
+
+
+    @rx.var
+    def puede_ir_adelante(self) -> bool:
+        return self.page < self.total_paginas 
+    
 
 
     # =========================
@@ -98,3 +141,60 @@ class PublicState(rx.State):
             return rx.redirect("/articulo")
         except Exception:
             self.post_actual = None
+
+    
+    async def aplicar_filtros(self):
+
+        self.total_posts = contar_posts(
+            texto=self.busqueda,
+            categoria_slug=self.categoria_activa,
+        )
+
+        posts_db = buscar_posts(
+            texto=self.busqueda,
+            categoria_slug=self.categoria_activa,
+            page=self.page,
+            per_page=self.per_page,
+        )
+
+        self.posts = [
+            PostPublic(
+                id=post.id,
+                titulo=post.titulo,
+                slug=post.slug,
+                contenido=post.contenido,
+                fecha_publicacion=post.fecha_publicacion.strftime("%d/%m/%Y"),
+            )
+            for post in posts_db
+        ]
+
+    
+    async def set_busqueda(self, value: str):
+        self.busqueda = value
+        await self.aplicar_filtros()
+
+    async def set_categoria(self, slug: str):
+        self.categoria_activa = slug
+        await self.aplicar_filtros()
+
+    async def limpiar_busqueda(self):
+        self.busqueda = ""
+        await self.aplicar_filtros()
+
+    
+    #METODO PARA CAMBIAR PAGINA
+    async def siguiente_pagina(self):
+        if self.page < self.total_paginas:
+            self.page += 1
+            await self.aplicar_filtros()
+
+
+    async def pagina_anterior(self):
+        if self.page > 1:
+            self.page -= 1
+            await self.aplicar_filtros()
+
+    async def resetear_paginacion(self):
+        self.page = 1
+        await self.aplicar_filtros()
+

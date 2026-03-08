@@ -138,3 +138,65 @@ def obtener_recientes(limit: int = 5):
             .order_by(Post.fecha_publicacion.desc())
             .limit(limit)
         ).all()
+
+ #Funcion de busqueda que se extiende en PublicState
+def buscar_posts_por_titulo(texto: str):
+    with Session(engine) as session:
+        statement = (
+            select(Post)
+            .where(
+                Post.publicado == True,
+                Post.titulo.ilike(f"%{texto}%")
+            )
+            .order_by(Post.fecha_publicacion.desc())
+        )
+        return session.exec(statement).all()
+
+def buscar_posts(
+    texto: str = "",
+    categoria_slug: str = "",
+    page: int = 1,
+    per_page: int = 5,
+):
+    with Session(engine) as session:
+        statement = select(Post).where(Post.publicado == True)
+
+        if texto:
+            statement = statement.where(
+                (Post.titulo.ilike(f"%{texto}%")) |
+                (Post.contenido.ilike(f"%{texto}%"))
+            )
+
+        if categoria_slug:
+            from editorial_cms.models.category import Category
+            statement = statement.join(Category).where(
+                Category.slug == categoria_slug
+            )
+
+        statement = statement.order_by(Post.fecha_publicacion.desc())
+
+        # paginación
+        offset = (page - 1) * per_page
+        statement = statement.offset(offset).limit(per_page)
+
+        return session.exec(statement).all()
+
+from sqlalchemy import func
+
+def contar_posts(texto: str = "", categoria_slug: str = ""):
+    with Session(engine) as session:
+        statement = select(func.count()).select_from(Post).where(Post.publicado == True)
+
+        if texto:
+            statement = statement.where(
+                (Post.titulo.ilike(f"%{texto}%")) |
+                (Post.contenido.ilike(f"%{texto}%"))
+            )
+
+        if categoria_slug:
+            from editorial_cms.models.category import Category
+            statement = statement.join(Category).where(
+                Category.slug == categoria_slug
+            )
+
+        return session.exec(statement).one()
