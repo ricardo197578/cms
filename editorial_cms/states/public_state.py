@@ -80,6 +80,24 @@ class PublicState(rx.State):
     def puede_ir_adelante(self) -> bool:
         return self.page < self.total_paginas 
     
+    # Construir url dinamicamente
+    def construir_url(self):
+            params = []
+
+            if self.page > 1:
+                params.append(f"page={self.page}")
+
+            if self.busqueda:
+                params.append(f"q={self.busqueda}")
+
+            if self.categoria_activa:
+                params.append(f"cat={self.categoria_activa}")
+
+            if params:
+                return "/articulos?" + "&".join(params)
+
+            return "/articulos"
+        
 
 
     # =========================
@@ -173,20 +191,22 @@ class PublicState(rx.State):
     async def set_busqueda(self, value: str):
         self.busqueda = value
         self.page = 1
-        return rx.redirect("/articulos?page=1")
         await self.aplicar_filtros()
+        return rx.redirect(self.construir_url())
         
 
     async def set_categoria(self, slug: str):
         self.categoria_activa = slug
         self.page = 1
-        return rx.redirect("/articulos?page=1")
         await self.aplicar_filtros()
+        return rx.redirect(self.construir_url())
         
 
     async def limpiar_busqueda(self):
         self.busqueda = ""
+        self.page = 1
         await self.aplicar_filtros()
+        return rx.redirect(self.construir_url())
 
     
     #METODO PARA CAMBIAR PAGINA
@@ -194,26 +214,35 @@ class PublicState(rx.State):
         if self.page < self.total_paginas:
             self.page += 1
             await self.aplicar_filtros()
-            return rx.redirect(f"/articulos?page={self.page}")
+            return rx.redirect(self.construir_url())
 
     async def pagina_anterior(self):
         if self.page > 1:
             self.page -= 1
             await self.aplicar_filtros()
-            return rx.redirect(f"/articulos?page={self.page}")
+            return rx.redirect(self.construir_url())
 
     
+    
+
     async def resetear_paginacion(self):
 
         url = self.router.url
         parsed = urlparse(url)
         query_dict = parse_qs(parsed.query)
 
-        page_param = query_dict.get("page", ["1"])[0]
-
+        # PAGE
         try:
-            self.page = int(page_param)
+            self.page = int(query_dict.get("page", ["1"])[0])
         except:
             self.page = 1
 
+        # BUSQUEDA
+        self.busqueda = query_dict.get("q", [""])[0]
+
+        # CATEGORIA
+        self.categoria_activa = query_dict.get("cat", [""])[0]
+
         await self.aplicar_filtros()
+
+        

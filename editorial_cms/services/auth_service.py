@@ -16,3 +16,12 @@ def autenticar_usuario(username: str, password: str):
             return None
 
         return usuario
+    
+
+def obtener_rol_por_id(user_id: int):
+    with Session(engine) as session:
+        statement = select(Usuario).where(Usuario.id == user_id)
+        usuario = session.exec(statement).first()
+        if usuario:
+            return usuario.rol
+        return None

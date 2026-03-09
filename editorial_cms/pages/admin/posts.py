@@ -12,101 +12,246 @@ from editorial_cms.services.category_service import obtener_categorias
 def posts():
 
     contenido = rx.vstack(
-        rx.heading("Gestión de Artículos"),
 
-        rx.select.root(
-            rx.select.trigger(
-                placeholder="Seleccionar categoría",
-                width="300px"
+        # HEADER DE LA PÁGINA
+        rx.flex(
+            rx.heading("Gestión de Artículos", size="8"),
+
+            rx.badge(
+                PostState.posts.length().to_string() + " Total",
+                variant="surface",
+                color_scheme="indigo"
             ),
-            rx.select.content(
-                *[
-                    rx.select.item(
-                        cat.nombre,
-                        value=str(cat.id)
-                    )
-                    for cat in obtener_categorias()
-                ]
-            ),
-            on_change=PostState.set_categoria_id
+
+            spacing="4",
+            align="center",
+            margin_bottom="4",
         ),
 
-        rx.input(
-            placeholder="Título",
-            value=PostState.titulo,
-            on_change=PostState.set_titulo
-        ),
+        # =========================
+        # EDITOR DE ARTÍCULOS
+        # =========================
+        rx.card(
 
-        rx.text_area(
-            placeholder="Contenido",
-            value=PostState.contenido,
-            on_change=PostState.set_contenido
-        ),
+            rx.vstack(
 
-        
+                rx.hstack(
+                    rx.icon("pen-line"),
+                    rx.text("Editor de Contenido", weight="bold"),
+                    spacing="2",
+                ),
 
-        rx.cond(
-        PostState.editando_id,
-        rx.button(
-            "Actualizar",
-            color_scheme="blue",
-            on_click=PostState.actualizar_post
-        ),
-        rx.button(
-            "Guardar",
-            on_click=PostState.guardar_post
-        ),
+                rx.select.root(
+                    rx.select.trigger(
+                        placeholder="Seleccionar categoría",
+                        width="100%"
+                    ),
+                    rx.select.content(
+                        *[
+                            rx.select.item(cat.nombre, value=str(cat.id))
+                            for cat in obtener_categorias()
+                        ]
+                    ),
+                    on_change=PostState.set_categoria_id,
+                ),
 
-        ),
+                rx.input(
+                    placeholder="Título del artículo...",
+                    value=PostState.titulo,
+                    on_change=PostState.set_titulo,
+                    width="100%",
+                    size="3",
+                ),
 
-        rx.divider(),
-
-        rx.foreach(
-            PostState.posts,
-            lambda post: rx.box(
                 rx.vstack(
-                    rx.heading(post.titulo),
-                    rx.text(post.contenido),
 
-                    rx.hstack(
-                        rx.button(
-                            "Editar",
-                            size="1",
-                            on_click=lambda: PostState.set_editando(post.id)
-                        ),
-
-                        rx.button(
-                            rx.cond(
-                                post.publicado,
-                                "Despublicar",
-                                "Publicar"
-                            ),
-                            size="1",
-                            color_scheme="blue",
-                            on_click=lambda: PostState.toggle_publicado(post.id)
-                        ),
-
-                        rx.cond(
-                            AuthState.usuario_logueado["rol"] == "admin",
-                            rx.button(
-                                "Eliminar",
-                                color_scheme="red",
-                                size="1",
-                                on_click=lambda: PostState.eliminar_post(post.id)
-                            )
-                        ),
-
-                        spacing="2",
+                    rx.text(
+                        "Markdown: **negrita**  # titulo  - lista  [link](url)",
+                        size="1",
+                        color="gray"
                     ),
 
-                    spacing="2",
-                    align_items="start",
+                    rx.text("Contenido", weight="bold"),
+
+                    
+                    rx.text_area(
+                        placeholder="Escribe el contenido en Markdown...",
+                        value=PostState.contenido,
+                        on_change=PostState.set_contenido,
+                        width="100%",
+                        min_height="250px",
+                    ),
+
+                    rx.card(
+                        rx.vstack(
+                            rx.text("Vista previa", weight="bold"),
+                            rx.markdown(PostState.contenido),
+                            max_height="300px",
+                            overflow="auto"
+                        ),
+                        width="100%",
+                        padding="4",
+                        variant="surface",
+                    ),
+
+                    width="100%",
                 ),
-                border="1px solid #ddd",
-                padding="10px",
-                border_radius="8px",
-            )
-        )
+
+                rx.flex(
+
+                    rx.cond(
+                        PostState.editando_id,
+
+                        rx.button(
+                            "Actualizar Artículo",
+                            icon="refresh-cw",
+                            color_scheme="blue",
+                            on_click=PostState.actualizar_post,
+                            width="100%"
+                        ),
+
+                        rx.button(
+                            "Publicar Nuevo",
+                            icon="plus",
+                            color_scheme="grass",
+                            on_click=PostState.guardar_post,
+                            width="100%"
+                        ),
+                    ),
+
+                    width="100%",
+                ),
+
+                spacing="3",
+            ),
+
+            width="100%",
+            padding="6",
+            variant="surface",
+        ),
+
+        rx.divider(margin_y="4"),
+
+        # =========================
+        # TABLA DE ARTÍCULOS
+        # =========================
+        rx.card(
+
+            rx.table.root(
+
+                rx.table.header(
+                    rx.table.row(
+
+                        rx.table.column_header_cell("Título"),
+
+                        rx.table.column_header_cell("Estado"),
+
+                        rx.table.column_header_cell("Acciones"),
+                    )
+                ),
+
+                rx.table.body(
+
+                    rx.foreach(
+
+                        PostState.posts,
+
+                        lambda post: rx.table.row(
+
+                            # TÍTULO
+                            rx.table.cell(
+                                rx.vstack(
+                                    rx.text(
+                                        post.titulo,
+                                        weight="bold"
+                                    ),
+
+                                    rx.text(
+                                        post.contenido,
+                                        size="2",
+                                        color_scheme="gray",
+                                        max_lines=1
+                                    ),
+
+                                    align_items="start",
+                                )
+                            ),
+
+                            # ESTADO
+                            rx.table.cell(
+
+                                rx.cond(
+                                    post.publicado,
+
+                                    rx.badge(
+                                        "Publicado",
+                                        color_scheme="green",
+                                        variant="soft"
+                                    ),
+
+                                    rx.badge(
+                                        "Borrador",
+                                        color_scheme="amber",
+                                        variant="soft"
+                                    ),
+                                )
+                            ),
+
+                            # ACCIONES
+                            rx.table.cell(
+
+                                rx.hstack(
+
+                                    rx.button(
+                                        "Editar",
+                                        icon="edit",
+                                        size="1",
+                                        variant="soft",
+                                        on_click=lambda: PostState.set_editando(post.id)
+                                    ),
+
+                                    rx.button(
+                                        rx.cond(
+                                            post.publicado,
+                                            "Desactivar",
+                                            "Activar"
+                                        ),
+                                        size="1",
+                                        variant="outline",
+                                        color_scheme="blue",
+                                        on_click=lambda: PostState.toggle_publicado(post.id)
+                                    ),
+
+                                    rx.cond(
+
+                                        AuthState.usuario_logueado["rol"] == "admin",
+
+                                        rx.button(
+                                            "Eliminar",
+                                            icon="trash-2",
+                                            size="1",
+                                            color_scheme="red",
+                                            variant="soft",
+                                            on_click=lambda: PostState.eliminar_post(post.id)
+                                        ),
+                                    ),
+
+                                    spacing="2"
+                                )
+                            )
+                        )
+                    )
+                ),
+
+                width="100%",
+                variant="surface",
+            ),
+
+            width="100%"
+        ),
+
+        width="100%",
+        spacing="6",
     )
 
     return admin_layout(contenido)
