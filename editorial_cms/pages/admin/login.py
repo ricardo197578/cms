@@ -5,25 +5,65 @@ from editorial_cms.states.auth_state import AuthState
 @rx.page(route="/admin/login")
 def login():
     return rx.center(
-        rx.vstack(
-            rx.heading("Login Administrador"),
-            rx.link("← Volver", href="/"),
-            rx.input(
-                placeholder="Usuario",
-                on_change=AuthState.set_username
+
+        rx.box(
+
+            rx.vstack(
+
+                rx.heading(
+                    "Login Administrador",
+                    size=rx.breakpoints(initial="5", md="7"),
+                    text_align="center",
+                ),
+
+                rx.link(
+                    "← Volver",
+                    href="/",
+                    font_size=rx.breakpoints(initial="xs", md="sm"),
+                ),
+
+                rx.input(
+                    placeholder="Usuario",
+                    on_change=AuthState.set_username,
+                    width="100%",
+                    font_size=rx.breakpoints(initial="sm", md="md"),
+                ),
+
+                rx.input(
+                    placeholder="Contraseña",
+                    type="password",
+                    on_change=AuthState.set_password,
+                    width="100%",
+                    font_size=rx.breakpoints(initial="sm", md="md"),
+                ),
+
+                rx.button(
+                    "Ingresar",
+                    on_click=AuthState.login,
+                    width="100%",
+                    size=rx.breakpoints(initial="2", md="3"),
+                ),
+
+                rx.text(
+                    AuthState.error,
+                    color="red",
+                    text_align="center",
+                    font_size=rx.breakpoints(initial="xs", md="sm"),
+                ),
+
+                spacing="4",
+                width="100%",
             ),
-            rx.input(
-                placeholder="Contraseña",
-                type="password",
-                on_change=AuthState.set_password
-            ),
-            rx.button(
-                "Ingresar",
-                on_click=AuthState.login
-            ),
-            rx.text(AuthState.error, color="red"),
-            spacing="4",
+
+            width="100%",
+            max_width="420px",
+            padding=rx.breakpoints(initial="20px", md="32px"),
+            border_radius="12px",
+            box_shadow="lg",
+            background="white",
         ),
-        
+
         height="100vh",
+        background="gray.100",
+        padding=rx.breakpoints(initial="12px", md="16px"),
     )
