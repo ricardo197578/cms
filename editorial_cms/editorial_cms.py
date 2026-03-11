@@ -7,6 +7,7 @@ from editorial_cms.pages.admin.dashboard import dashboard
 import editorial_cms.pages.admin.posts
 import editorial_cms.pages.admin.usuarios
 import editorial_cms.pages.admin.configuracion
+import editorial_cms.pages.admin.categorias 
 
 from editorial_cms.pages.index import index 
 import editorial_cms.models.post 
@@ -18,4 +19,6 @@ from editorial_cms.pages.public.categoria import categoria
 
 init_db()
 
+
 app = rx.App()
+    

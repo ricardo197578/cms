@@ -4,7 +4,6 @@ from editorial_cms.states.post_state import PostState
 from editorial_cms.components.admin_layout import admin_layout
 from editorial_cms.services.category_service import obtener_categorias
 
-
 @rx.page(
     route="/admin/posts",
     on_load=[AuthState.check_auth, PostState.cargar_posts]
@@ -64,36 +63,17 @@ def posts():
                 ),
 
                 rx.vstack(
-
-                    rx.text(
-                        "Markdown: **negrita**  # titulo  - lista  [link](url)",
-                        size="1",
-                        color="gray"
-                    ),
-
-                    rx.text("Contenido", weight="bold"),
-
+                    rx.text("Contenido del artículo", weight="bold"),
                     
+                    # USO DEL EDITOR
                     rx.text_area(
-                        placeholder="Escribe el contenido en Markdown...",
+                        placeholder="Escribe el contenido del artículo...",
                         value=PostState.contenido,
                         on_change=PostState.set_contenido,
                         width="100%",
                         min_height="250px",
                     ),
-
-                    rx.card(
-                        rx.vstack(
-                            rx.text("Vista previa", weight="bold"),
-                            rx.markdown(PostState.contenido),
-                            max_height="300px",
-                            overflow="auto"
-                        ),
-                        width="100%",
-                        padding="4",
-                        variant="surface",
-                    ),
-
+                   
                     width="100%",
                 ),
 
@@ -234,24 +214,18 @@ def posts():
                                             variant="soft",
                                             on_click=lambda: PostState.eliminar_post(post.id)
                                         ),
-                                    ),
-
-                                    spacing="2"
+                                    )
                                 )
                             )
                         )
                     )
                 ),
-
                 width="100%",
-                variant="surface",
             ),
-
-            width="100%"
+            width="100%",
         ),
-
+        spacing="4",
         width="100%",
-        spacing="6",
     )
 
     return admin_layout(contenido)

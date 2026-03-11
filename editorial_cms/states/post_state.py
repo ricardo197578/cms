@@ -22,6 +22,7 @@ class PostState(rx.State):
     posts: List[Post] = []
     editando_id: int | None = None
 
+    
     # 🔹 Cargar posts según rol
     async def cargar_posts(self):
 

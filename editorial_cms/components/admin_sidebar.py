@@ -39,6 +39,7 @@ def admin_sidebar():
             sidebar_item("file-text", "Crud Artículos", "/admin/posts"),
             sidebar_item("users", "Crud Usuarios", "/admin/usuarios"),
             sidebar_item("settings", "Editar bienvenida", "/admin/configuracion"),
+            sidebar_item("settings","Crud Categorías", "/admin/categorias"),
             
             rx.spacer(),
 

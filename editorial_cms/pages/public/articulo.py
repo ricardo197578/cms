@@ -56,13 +56,11 @@ def articulo():
 
                 rx.divider(),
 
-                # 🔹 CONTENIDO
-                rx.text(
-                    PublicState.post_actual.contenido,
-                    font_size="md",
-                ),
-
-                
+                # 🔹 CONTENIDO DEL ARTÍCULO
+                    rx.text(
+                        PublicState.post_actual.contenido,
+                        font_size="md",
+                    ),              
 
                 spacing="4",
                 align="start",

@@ -27,12 +27,51 @@ def obtener_categorias():
         return session.exec(select(Category)).all()
 
 
+def obtener_categoria_por_id(categoria_id: int):
+    with Session(engine) as session:
+        return session.exec(
+            select(Category).where(Category.id == categoria_id)
+        ).first()
+
+
 def obtener_categoria_por_slug(slug: str):
     with Session(engine) as session:
         return session.exec(
             select(Category).where(Category.slug == slug)
         ).first()
-    
+
+
+def actualizar_categoria(categoria_id: int, nombre: str):
+    with Session(engine) as session:
+        categoria = session.exec(
+            select(Category).where(Category.id == categoria_id)
+        ).first()
+        
+        if not categoria:
+            return None
+        
+        slug = generar_slug_categoria(nombre)
+        categoria.nombre = nombre
+        categoria.slug = slug
+        session.add(categoria)
+        session.commit()
+        session.refresh(categoria)
+        return categoria
+
+
+def eliminar_categoria(categoria_id: int):
+    with Session(engine) as session:
+        categoria = session.exec(
+            select(Category).where(Category.id == categoria_id)
+        ).first()
+        
+        if not categoria:
+            return False
+        
+        session.delete(categoria)
+        session.commit()
+        return True
+
 
 from sqlmodel import Session, select
 from editorial_cms.database import engine
