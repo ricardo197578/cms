@@ -123,170 +123,6 @@ class CategoriaAdminState(rx.State):
 def categorias():
     """Página de gestión de categorías con CRUD completo."""
 
-    # Formulario para crear o editar
-    formulario = rx.card(
-        rx.vstack(
-            # Título condicional
-            rx.cond(
-                CategoriaAdminState.editando_id,
-                rx.hstack(
-                    rx.icon("edit-2"),
-                    rx.text("Editar Categoría", weight="bold"),
-                    spacing="2",
-                ),
-                rx.hstack(
-                    rx.icon("plus-circle"),
-                    rx.text("Nueva Categoría", weight="bold"),
-                    spacing="2",
-                ),
-            ),
-
-            # Input
-            rx.input(
-                placeholder="Nombre de categoría...",
-                value=CategoriaAdminState.nombre,
-                on_change=CategoriaAdminState.set_nombre,
-                width="100%",
-                size="2",
-            ),
-
-            # Botones de acción
-            rx.flex(
-                rx.cond(
-                    CategoriaAdminState.editando_id,
-                    # Si está editando
-                    rx.hstack(
-                        rx.button(
-                            "Actualizar",
-                            icon="save",
-                            color_scheme="blue",
-                            on_click=CategoriaAdminState.actualizar,
-                            width="100%",
-                        ),
-                        rx.button(
-                            "Cancelar",
-                            icon="x",
-                            variant="outline",
-                            color_scheme="gray",
-                            on_click=CategoriaAdminState.cancelar_edicion,
-                            width="100%",
-                        ),
-                        spacing="2",
-                        width="100%",
-                    ),
-                    # Si está creando
-                    rx.button(
-                        "Crear Categoría",
-                        icon="plus",
-                        color_scheme="grass",
-                        on_click=CategoriaAdminState.crear,
-                        width="100%",
-                    ),
-                ),
-                width="100%",
-            ),
-
-            # Mensaje de feedback
-            rx.cond(
-                CategoriaAdminState.mensaje != "",
-                rx.box(
-                    rx.text(CategoriaAdminState.mensaje, size="2"),
-                    padding="3",
-                    background=rx.cond(
-                        CategoriaAdminState.mensaje.contains("✓"),
-                        "#d1f2eb",
-                        "#fef2f2",
-                    ),
-                    border_radius="8px",
-                    border_left="4px solid",
-                    border_left_color=rx.cond(
-                        CategoriaAdminState.mensaje.contains("✓"),
-                        "#059669",
-                        "#dc2626",
-                    ),
-                ),
-            ),
-
-            spacing="4",
-            width="100%",
-        ),
-        width="100%",
-    )
-
-    # Lista de categorías
-    lista = rx.card(
-        rx.vstack(
-            rx.hstack(
-                rx.icon("list"),
-                rx.text("Categorías Registradas", weight="bold"),
-                rx.badge(
-                    CategoriaAdminState.categorias.length().to_string(),
-                    color_scheme="blue",
-                ),
-                spacing="2",
-                width="100%",
-            ),
-
-            rx.cond(
-                CategoriaAdminState.categorias.length() > 0,
-                rx.vstack(
-                    rx.foreach(
-                        CategoriaAdminState.categorias,
-                        lambda cat: rx.hstack(
-                            rx.box(
-                                rx.vstack(
-                                    rx.text(cat.nombre, weight="bold", size="3"),
-                                    rx.text(
-                                        cat.slug,
-                                        size="1",
-                                        color="#666",
-                                    ),
-                                    spacing="1",
-                                ),
-                                flex="1",
-                            ),
-                            rx.hstack(
-                                rx.button(
-                                    rx.icon("edit"),
-                                    size="1",
-                                    color_scheme="blue",
-                                    variant="outline",
-                                    on_click=lambda: CategoriaAdminState.set_editando(
-                                        cat.id
-                                    ),
-                                ),
-                                rx.button(
-                                    rx.icon("trash-2"),
-                                    size="1",
-                                    color_scheme="red",
-                                    variant="outline",
-                                    on_click=lambda: CategoriaAdminState.preparar_eliminacion(
-                                        cat.id
-                                    ),
-                                ),
-                                spacing="2",
-                            ),
-                            padding="3",
-                            border_bottom="1px solid #e5e7eb",
-                            width="100%",
-                            align="center",
-                        ),
-                    ),
-                    width="100%",
-                    spacing="0",
-                ),
-                rx.box(
-                    rx.text("No hay categorías registradas", color="#999"),
-                    padding="6",
-                    text_align="center",
-                ),
-            ),
-            spacing="4",
-            width="100%",
-        ),
-        width="100%",
-    )
-
     # Diálogo de confirmación
     dialogo = rx.dialog(
         rx.dialog.content(
@@ -323,15 +159,165 @@ def categorias():
 
     # Contenido principal
     contenido = rx.vstack(
-        rx.heading("Gestión de Categorías", size="8"),
+        rx.heading("Gestión de Categorías", size="7"),
 
-        formulario,
-        lista,
+        # 🔹 FORMULARIO - Crear o Editar
+        rx.card(
+            rx.vstack(
+                rx.cond(
+                    CategoriaAdminState.editando_id,
+                    rx.heading("Editar Categoría", size="5"),
+                    rx.heading("Nueva Categoría", size="5"),
+                ),
 
-        spacing="6",
-        padding="2em",
+                rx.text("Nombre de categoría", weight="bold"),
+                rx.input(
+                    placeholder="Nombre de categoría...",
+                    value=CategoriaAdminState.nombre,
+                    on_change=CategoriaAdminState.set_nombre,
+                    width="100%",
+                ),
+
+                rx.cond(
+                    CategoriaAdminState.editando_id,
+                    # Si está editando
+                    rx.hstack(
+                        rx.button(
+                            "Actualizar",
+                            icon="save",
+                            color_scheme="blue",
+                            on_click=CategoriaAdminState.actualizar,
+                            width="100%",
+                        ),
+                        rx.button(
+                            "Cancelar",
+                            icon="x",
+                            variant="outline",
+                            color_scheme="gray",
+                            on_click=CategoriaAdminState.cancelar_edicion,
+                            width="100%",
+                        ),
+                        spacing="2",
+                        width="100%",
+                    ),
+                    # Si está creando
+                    rx.button(
+                        "Crear Categoría",
+                        icon="plus",
+                        color_scheme="grass",
+                        on_click=CategoriaAdminState.crear,
+                        width="100%",
+                    ),
+                ),
+
+                rx.cond(
+                    CategoriaAdminState.mensaje != "",
+                    rx.hstack(
+                        rx.text(
+                            CategoriaAdminState.mensaje,
+                            color=rx.cond(
+                                CategoriaAdminState.mensaje.contains("✓"),
+                                "green",
+                                "red",
+                            ),
+                            weight="bold"
+                        ),
+                        rx.button(
+                            "✕",
+                            size="2",
+                            variant="ghost",
+                            color_scheme="gray",
+                            on_click=CategoriaAdminState.cancelar_edicion,
+                        ),
+                        align="center",
+                        spacing="3"
+                    )
+                ),
+
+                spacing="3",
+                width="100%",
+            ),
+            padding="6",
+            width="600px"
+        ),
+
+        # 🔹 LISTA DE CATEGORÍAS
+        rx.card(
+            rx.vstack(
+                rx.hstack(
+                    rx.heading("Categorías Registradas", size="5"),
+                    rx.badge(
+                        CategoriaAdminState.categorias.length().to_string(),
+                        color_scheme="blue",
+                    ),
+                    spacing="3",
+                    width="100%",
+                ),
+
+                rx.cond(
+                    CategoriaAdminState.categorias.length() > 0,
+                    rx.vstack(
+                        rx.foreach(
+                            CategoriaAdminState.categorias,
+                            lambda cat: rx.hstack(
+                                rx.box(
+                                    rx.vstack(
+                                        rx.text(cat.nombre, weight="bold", size="3"),
+                                        rx.text(
+                                            cat.slug,
+                                            size="1",
+                                            color="#666",
+                                        ),
+                                        spacing="1",
+                                    ),
+                                    flex="1",
+                                ),
+                                rx.hstack(
+                                    rx.button(
+                                        rx.icon("edit"),
+                                        size="1",
+                                        color_scheme="blue",
+                                        variant="outline",
+                                        on_click=lambda: CategoriaAdminState.set_editando(
+                                            cat.id
+                                        ),
+                                    ),
+                                    rx.button(
+                                        rx.icon("trash-2"),
+                                        size="1",
+                                        color_scheme="red",
+                                        variant="outline",
+                                        on_click=lambda: CategoriaAdminState.preparar_eliminacion(
+                                            cat.id
+                                        ),
+                                    ),
+                                    spacing="2",
+                                ),
+                                padding="3",
+                                border_bottom="1px solid #e5e7eb",
+                                width="100%",
+                                align="center",
+                            ),
+                        ),
+                        width="100%",
+                        spacing="0",
+                    ),
+                    rx.box(
+                        rx.text("No hay categorías registradas", color="#999"),
+                        padding="6",
+                        text_align="center",
+                    ),
+                ),
+                spacing="3",
+                width="100%",
+            ),
+            padding="6",
+            width="600px"
+        ),
+
         width="100%",
-        max_width="800px",
+        align="center",
+        spacing="5"
     )
 
     return admin_layout(rx.vstack(contenido, dialogo, width="100%"))
