@@ -1,6 +1,7 @@
 import reflex as rx
 from typing import List
 from editorial_cms.models.post import Post
+from editorial_cms.models.category import Category
 from editorial_cms.states.auth_state import AuthState
 from editorial_cms.services.post_service import (
     crear_post,
@@ -11,6 +12,7 @@ from editorial_cms.services.post_service import (
     obtener_post_por_id,
 )
 from editorial_cms.services.post_service import toggle_publicado
+from editorial_cms.services.category_service import obtener_categorias
 
 
 class PostState(rx.State):
@@ -20,6 +22,7 @@ class PostState(rx.State):
     categoria_id: str = ""
 
     posts: List[Post] = []
+    categorias: List[Category] = []
     editando_id: int | None = None
 
     
@@ -38,6 +41,10 @@ class PostState(rx.State):
             self.posts = obtener_posts_por_autor(auth.user_id)
         else:
             self.posts = []
+
+    # 🔹 Cargar categorías disponibles
+    async def cargar_categorias(self):
+        self.categorias = obtener_categorias()
 
     # 🔹 Crear post seguro
     async def guardar_post(self):

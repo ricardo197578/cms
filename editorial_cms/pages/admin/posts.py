@@ -2,11 +2,10 @@ import reflex as rx
 from editorial_cms.states.auth_state import AuthState
 from editorial_cms.states.post_state import PostState
 from editorial_cms.components.admin_layout import admin_layout
-from editorial_cms.services.category_service import obtener_categorias
 
 @rx.page(
     route="/admin/posts",
-    on_load=[AuthState.check_auth, PostState.cargar_posts]
+    on_load=[AuthState.check_auth, PostState.cargar_posts, PostState.cargar_categorias]
 )
 def posts():
 
@@ -46,10 +45,10 @@ def posts():
                         width="100%"
                     ),
                     rx.select.content(
-                        *[
-                            rx.select.item(cat.nombre, value=str(cat.id))
-                            for cat in obtener_categorias()
-                        ]
+                        rx.foreach(
+                            PostState.categorias,
+                            lambda cat: rx.select.item(cat.nombre, value=str(cat.id))
+                        )
                     ),
                     on_change=PostState.set_categoria_id,
                 ),
