@@ -1,5 +1,6 @@
 import reflex as rx
 from editorial_cms.states.public_state import PublicState
+from editorial_cms.states.site_config_state import SiteConfigState
 from editorial_cms.components.banner import banner
 from editorial_cms.components.footer import footer
 
@@ -7,6 +8,7 @@ from editorial_cms.components.footer import footer
 @rx.page(
     route="/articulos",
     on_load=[
+        SiteConfigState.cargar_config,
         PublicState.resetear_paginacion,
         PublicState.cargar_categorias_sidebar,
         PublicState.cargar_recientes,
@@ -165,6 +167,8 @@ def articulos():
             ),
             padding_y="2em",
             max_width="1100px",
+            background="white",
+            border_radius="12px",
         ),
 
         # 🔹 FOOTER DEL SITIO
@@ -172,4 +176,5 @@ def articulos():
         
         width="100%",
         align="center",
+        min_height="100vh",
     )
