@@ -1,7 +1,7 @@
 import reflex as rx
 from editorial_cms.states.auth_state import AuthState
 from editorial_cms.states.post_state import PostState
-from editorial_cms.components.admin_layout import admin_layout
+from editorial_cms.components.container import content_container
 
 @rx.page(
     route="/admin/posts",
@@ -13,19 +13,29 @@ def posts():
 
         # HEADER DE LA PÁGINA
         rx.flex(
-            rx.heading("Gestión de Artículos", size="8"),
-
-            rx.badge(
-                PostState.posts.length().to_string() + " Total",
-                variant="surface",
-                color_scheme="indigo"
+            rx.link(
+                rx.hstack(
+                    rx.icon("arrow-left"),
+                    rx.text("Volver"),
+                    spacing="2"
+                ),
+                href="/admin/dashboard",
+                text_decoration="none",
             ),
-
-            spacing="4",
+            rx.spacer(),
+            rx.hstack(
+                rx.heading("Gestión de Artículos", size="7"),
+                rx.badge(
+                    PostState.posts.length().to_string() + " Total",
+                    variant="surface",
+                    color_scheme="indigo"
+                ),
+                spacing="4",
+                align="center",
+            ),
+            width="100%",
             align="center",
             margin_bottom="4",
-            width="100%",
-            flex_wrap="wrap",
         ),
 
         # =========================
@@ -143,7 +153,7 @@ def posts():
 
                         rx.foreach(
 
-                            PostState.posts,
+                            PostState.posts_paginados,
 
                             lambda post: rx.table.row(
 
@@ -231,6 +241,24 @@ def posts():
                     ),
                     width="100%",
                 ),
+
+                # 🔹 CONTROLES DE PAGINACIÓN
+                rx.hstack(
+                    rx.button(
+                        "← Anterior",
+                        on_click=PostState.pagina_anterior,
+                        is_disabled=~PostState.puede_ir_atras,
+                    ),
+                    rx.text("Página " + PostState.page.to_string()),
+                    rx.button(
+                        "Siguiente →",
+                        on_click=PostState.siguiente_pagina,
+                        is_disabled=~PostState.puede_ir_adelante,
+                    ),
+                    spacing="4",
+                    justify="center",
+                    width="100%",
+                ),
             ),
             width="100%",
             padding="6",
@@ -239,4 +267,6 @@ def posts():
         width="100%",
     )
 
-    return admin_layout(contenido)
+    return content_container(
+        contenido
+    )

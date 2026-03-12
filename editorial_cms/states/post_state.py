@@ -25,6 +25,10 @@ class PostState(rx.State):
     categorias: List[Category] = []
     editando_id: int | None = None
 
+    # 🔹 PAGINACIÓN
+    page: int = 1
+    posts_per_page: int = 5
+
     # 🔹 Setter para categoria_id que valida y parsea correctamente
     def set_categoria_id(self, value: str):
         """Captura el ID de categoría del select y lo valida"""
@@ -50,11 +54,13 @@ class PostState(rx.State):
         # Admin → todos
         if auth.user_role == "admin":
             self.posts = obtener_posts()
+            self.page = 1  # Resetear a primera página
             return
 
         # Editor → solo los suyos
         if auth.user_id:
             self.posts = obtener_posts_por_autor(auth.user_id)
+            self.page = 1  # Resetear a primera página
         else:
             self.posts = []
 
@@ -139,3 +145,29 @@ class PostState(rx.State):
 
         toggle_publicado(post_id)
         await self.cargar_posts()
+
+    # 🔹 MÉTODOS DE PAGINACIÓN
+    def pagina_anterior(self):
+        if self.page > 1:
+            self.page -= 1
+
+    def siguiente_pagina(self):
+        total_paginas = (len(self.posts) + self.posts_per_page - 1) // self.posts_per_page
+        if self.page < total_paginas:
+            self.page += 1
+
+    # 🔹 PROPIEDADES CALCULADAS
+    @rx.var
+    def puede_ir_atras(self) -> bool:
+        return self.page > 1
+
+    @rx.var
+    def puede_ir_adelante(self) -> bool:
+        total_paginas = (len(self.posts) + self.posts_per_page - 1) // self.posts_per_page
+        return self.page < total_paginas
+
+    @rx.var
+    def posts_paginados(self) -> List[Post]:
+        start = (self.page - 1) * self.posts_per_page
+        end = start + self.posts_per_page
+        return self.posts[start:end]

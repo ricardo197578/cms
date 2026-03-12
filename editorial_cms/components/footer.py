@@ -19,7 +19,7 @@ def footer():
                 spacing="3",
             )
         ),
-        # Estilos aplicados correctamente en Reflex:
+        # Estilos aplicados :
         background_color="#111827",  # Gris oscuro moderno
         color="#ffffff",             # Texto blanco
         padding_top="40px",          # Espaciado superior

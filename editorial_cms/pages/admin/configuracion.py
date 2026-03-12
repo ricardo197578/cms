@@ -1,6 +1,7 @@
 import reflex as rx
 from editorial_cms.states.auth_state import AuthState
 from editorial_cms.states.site_config_state import SiteConfigState
+from editorial_cms.components.container import content_container
 
 
 @rx.page(
@@ -166,13 +167,8 @@ def configuracion():
 
         width="100%",
         spacing="5",
-        max_width=rx.breakpoints(initial="100%", sm="700px"),
-        margin_x="auto",
-        padding_x=rx.breakpoints(initial="1em", sm="0"),
     )
 
-    return rx.container(
-        rx.vstack(contenido, width="100%"),
-        size="3",
-        padding_y="8",
+    return content_container(
+        contenido
     )
