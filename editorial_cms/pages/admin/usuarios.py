@@ -11,7 +11,22 @@ def usuarios():
         AuthState.rol_real == "admin",
         rx.container(
             rx.vstack(
-                rx.heading("Gestión de Usuarios", size="8", margin_bottom="4"),
+                rx.flex(
+                    rx.link(
+                        rx.hstack(
+                            rx.icon("arrow-left"),
+                            rx.text("Volver"),
+                            spacing="2"
+                        ),
+                        href="/admin/dashboard",
+                        text_decoration="none",
+                    ),
+                    rx.spacer(),
+                    rx.heading("Gestión de Usuarios", size="8"),
+                    width="100%",
+                    align="center",
+                    margin_bottom="4",
+                ),
                 
                 # Formulario de creación estilizado
                 rx.card(

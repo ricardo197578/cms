@@ -1,7 +1,6 @@
 import reflex as rx
 from editorial_cms.states.auth_state import AuthState
 from editorial_cms.states.site_config_state import SiteConfigState
-from editorial_cms.components.admin_layout import admin_layout
 
 
 @rx.page(
@@ -12,7 +11,22 @@ def configuracion():
 
     contenido = rx.vstack(
 
-        rx.heading("Modifica Pagina Inicio y Articulos", size="7"),
+        rx.flex(
+            rx.link(
+                rx.hstack(
+                    rx.icon("arrow-left"),
+                    rx.text("Volver"),
+                    spacing="2"
+                ),
+                href="/admin/dashboard",
+                text_decoration="none",
+            ),
+            rx.spacer(),
+            rx.heading("Modifica Pagina Inicio y Articulos", size="7"),
+            width="100%",
+            align="center",
+            margin_bottom="4",
+        ),
 
         # 🔹 CONFIGURACIÓN GENERAL
         rx.card(
@@ -36,7 +50,7 @@ def configuracion():
                 spacing="3"
             ),
             padding="6",
-            width="600px"
+            width="100%"
         ),
 
         # 🔹 HERO DEL INDEX
@@ -68,7 +82,7 @@ def configuracion():
                 spacing="3"
             ),
             padding="6",
-            width="600px"
+            width="100%"
         ),
 
         # 🔹 BANNER DE PÁGINAS
@@ -93,7 +107,7 @@ def configuracion():
                 spacing="3"
             ),
             padding="6",
-            width="600px"
+            width="100%"
         ),
 
         # 🔹 FOOTER
@@ -111,16 +125,16 @@ def configuracion():
                 spacing="3"
             ),
             padding="6",
-            width="600px"
+            width="100%"
         ),
 
         # 🔹 BOTONES DE ACCIÓN
-        rx.hstack(
+        rx.flex(
             rx.button(
                 "Guardar configuración",
                 color_scheme="green",
-                width="300px",
-                on_click=SiteConfigState.guardar
+                on_click=SiteConfigState.guardar,
+                width=rx.breakpoints(initial="100%", sm="auto")
             ),
 
             rx.cond(
@@ -145,12 +159,20 @@ def configuracion():
                 )
             ),
 
-            spacing="4"
+            spacing="4",
+            width="100%",
+            flex_wrap="wrap",
         ),
 
         width="100%",
-        align="center",
-        spacing="5"
+        spacing="5",
+        max_width=rx.breakpoints(initial="100%", sm="700px"),
+        margin_x="auto",
+        padding_x=rx.breakpoints(initial="1em", sm="0"),
     )
 
-    return admin_layout(contenido)
+    return rx.container(
+        rx.vstack(contenido, width="100%"),
+        size="3",
+        padding_y="8",
+    )

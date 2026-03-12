@@ -7,7 +7,6 @@ from editorial_cms.services.category_service import (
     obtener_categoria_por_id,
 )
 from editorial_cms.models.category import Category
-from editorial_cms.components.admin_layout import admin_layout
 from editorial_cms.states.auth_state import AuthState
 
 
@@ -159,7 +158,22 @@ def categorias():
 
     # Contenido principal
     contenido = rx.vstack(
-        rx.heading("Gestión de Categorías", size="7"),
+        rx.flex(
+            rx.link(
+                rx.hstack(
+                    rx.icon("arrow-left"),
+                    rx.text("Volver"),
+                    spacing="2"
+                ),
+                href="/admin/dashboard",
+                text_decoration="none",
+            ),
+            rx.spacer(),
+            rx.heading("Gestión de Categorías", size="7"),
+            width="100%",
+            align="center",
+            margin_bottom="4",
+        ),
 
         # 🔹 FORMULARIO - Crear o Editar
         rx.card(
@@ -178,36 +192,37 @@ def categorias():
                     width="100%",
                 ),
 
-                rx.cond(
-                    CategoriaAdminState.editando_id,
-                    # Si está editando
-                    rx.hstack(
-                        rx.button(
-                            "Actualizar",
-                            icon="save",
-                            color_scheme="blue",
-                            on_click=CategoriaAdminState.actualizar,
+                rx.flex(
+                    rx.cond(
+                        CategoriaAdminState.editando_id,
+                        # Si está editando
+                        rx.hstack(
+                            rx.button(
+                                "Actualizar",
+                                icon="save",
+                                color_scheme="blue",
+                                on_click=CategoriaAdminState.actualizar,
+                            ),
+                            rx.button(
+                                "Cancelar",
+                                icon="x",
+                                variant="outline",
+                                color_scheme="gray",
+                                on_click=CategoriaAdminState.cancelar_edicion,
+                            ),
+                            spacing="2",
                             width="100%",
                         ),
+                        # Si está creando
                         rx.button(
-                            "Cancelar",
-                            icon="x",
-                            variant="outline",
-                            color_scheme="gray",
-                            on_click=CategoriaAdminState.cancelar_edicion,
+                            "Crear Categoría",
+                            icon="plus",
+                            color_scheme="grass",
+                            on_click=CategoriaAdminState.crear,
                             width="100%",
                         ),
-                        spacing="2",
-                        width="100%",
                     ),
-                    # Si está creando
-                    rx.button(
-                        "Crear Categoría",
-                        icon="plus",
-                        color_scheme="grass",
-                        on_click=CategoriaAdminState.crear,
-                        width="100%",
-                    ),
+                    width="100%",
                 ),
 
                 rx.cond(
@@ -238,7 +253,7 @@ def categorias():
                 width="100%",
             ),
             padding="6",
-            width="600px"
+            width="100%"
         ),
 
         # 🔹 LISTA DE CATEGORÍAS
@@ -312,12 +327,18 @@ def categorias():
                 width="100%",
             ),
             padding="6",
-            width="600px"
+            width="100%"
         ),
 
         width="100%",
-        align="center",
-        spacing="5"
+        spacing="5",
+        max_width=rx.breakpoints(initial="100%", sm="700px"),
+        margin_x="auto",
+        padding_x=rx.breakpoints(initial="1em", sm="0"),
     )
 
-    return admin_layout(rx.vstack(contenido, dialogo, width="100%"))
+    return rx.container(
+        rx.vstack(contenido, dialogo, width="100%"),
+        size="3",
+        padding_y="8",
+    )

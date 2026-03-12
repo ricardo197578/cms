@@ -24,6 +24,8 @@ def posts():
             spacing="4",
             align="center",
             margin_bottom="4",
+            width="100%",
+            flex_wrap="wrap",
         ),
 
         # =========================
@@ -35,8 +37,9 @@ def posts():
 
                 rx.hstack(
                     rx.icon("pen-line"),
-                    rx.text("Editor de Contenido", weight="bold"),
+                    rx.heading("Editor de Contenido", size="5"),
                     spacing="2",
+                    width="100%",
                 ),
 
                 rx.select.root(
@@ -89,7 +92,7 @@ def posts():
                             icon="refresh-cw",
                             color_scheme="blue",
                             on_click=PostState.actualizar_post,
-                            width="100%"
+                            width=rx.breakpoints(initial="100%", sm="auto")
                         ),
 
                         rx.button(
@@ -97,11 +100,12 @@ def posts():
                             icon="plus",
                             color_scheme="grass",
                             on_click=PostState.guardar_post,
-                            width="100%"
+                            width=rx.breakpoints(initial="100%", sm="auto")
                         ),
                     ),
 
                     width="100%",
+                    flex_wrap="wrap",
                 ),
 
                 spacing="3",
@@ -119,112 +123,117 @@ def posts():
         # =========================
         rx.card(
 
-            rx.table.root(
+            rx.vstack(
+                rx.heading("Artículos Publicados", size="5"),
+                
+                rx.table.root(
 
-                rx.table.header(
-                    rx.table.row(
+                    rx.table.header(
+                        rx.table.row(
 
-                        rx.table.column_header_cell("Título"),
+                            rx.table.column_header_cell("Título"),
 
-                        rx.table.column_header_cell("Estado"),
+                            rx.table.column_header_cell("Estado"),
 
-                        rx.table.column_header_cell("Acciones"),
-                    )
-                ),
+                            rx.table.column_header_cell("Acciones"),
+                        )
+                    ),
 
-                rx.table.body(
+                    rx.table.body(
 
-                    rx.foreach(
+                        rx.foreach(
 
-                        PostState.posts,
+                            PostState.posts,
 
-                        lambda post: rx.table.row(
+                            lambda post: rx.table.row(
 
-                            # TÍTULO
-                            rx.table.cell(
-                                rx.vstack(
-                                    rx.text(
-                                        post.titulo,
-                                        weight="bold"
-                                    ),
-
-                                    rx.text(
-                                        post.contenido,
-                                        size="2",
-                                        color_scheme="gray",
-                                        max_lines=1
-                                    ),
-
-                                    align_items="start",
-                                )
-                            ),
-
-                            # ESTADO
-                            rx.table.cell(
-
-                                rx.cond(
-                                    post.publicado,
-
-                                    rx.badge(
-                                        "Publicado",
-                                        color_scheme="green",
-                                        variant="soft"
-                                    ),
-
-                                    rx.badge(
-                                        "Borrador",
-                                        color_scheme="amber",
-                                        variant="soft"
-                                    ),
-                                )
-                            ),
-
-                            # ACCIONES
-                            rx.table.cell(
-
-                                rx.hstack(
-
-                                    rx.button(
-                                        "Editar",
-                                        icon="edit",
-                                        size="1",
-                                        variant="soft",
-                                        on_click=lambda: PostState.set_editando(post.id)
-                                    ),
-
-                                    rx.button(
-                                        rx.cond(
-                                            post.publicado,
-                                            "Desactivar",
-                                            "Activar"
+                                # TÍTULO
+                                rx.table.cell(
+                                    rx.vstack(
+                                        rx.text(
+                                            post.titulo,
+                                            weight="bold"
                                         ),
-                                        size="1",
-                                        variant="outline",
-                                        color_scheme="blue",
-                                        on_click=lambda: PostState.toggle_publicado(post.id)
-                                    ),
+
+                                        rx.text(
+                                            post.contenido,
+                                            size="2",
+                                            color_scheme="gray",
+                                            max_lines=1
+                                        ),
+
+                                        align_items="start",
+                                    )
+                                ),
+
+                                # ESTADO
+                                rx.table.cell(
 
                                     rx.cond(
+                                        post.publicado,
 
-                                        AuthState.usuario_logueado["rol"] == "admin",
+                                        rx.badge(
+                                            "Publicado",
+                                            color_scheme="green",
+                                            variant="soft"
+                                        ),
+
+                                        rx.badge(
+                                            "Borrador",
+                                            color_scheme="amber",
+                                            variant="soft"
+                                        ),
+                                    )
+                                ),
+
+                                # ACCIONES
+                                rx.table.cell(
+
+                                    rx.hstack(
 
                                         rx.button(
-                                            "Eliminar",
-                                            icon="trash-2",
+                                            "Editar",
+                                            icon="edit",
                                             size="1",
-                                            color_scheme="red",
                                             variant="soft",
-                                            on_click=lambda: PostState.eliminar_post(post.id)
+                                            on_click=lambda: PostState.set_editando(post.id)
                                         ),
+
+                                        rx.button(
+                                            rx.cond(
+                                                post.publicado,
+                                                "Desactivar",
+                                                "Activar"
+                                            ),
+                                            size="1",
+                                            variant="outline",
+                                            color_scheme="blue",
+                                            on_click=lambda: PostState.toggle_publicado(post.id)
+                                        ),
+
+                                        rx.cond(
+
+                                            AuthState.usuario_logueado["rol"] == "admin",
+
+                                            rx.button(
+                                                "Eliminar",
+                                                icon="trash-2",
+                                                size="1",
+                                                color_scheme="red",
+                                                variant="soft",
+                                                on_click=lambda: PostState.eliminar_post(post.id)
+                                            ),
+                                        )
                                     )
                                 )
                             )
                         )
-                    )
+                    ),
+                    width="100%",
                 ),
-                width="100%",
             ),
             width="100%",
+            padding="6",
         ),
         spacing="4",
         width="100%",
