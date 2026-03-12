@@ -47,7 +47,10 @@ def posts():
                     rx.select.content(
                         rx.foreach(
                             PostState.categorias,
-                            lambda cat: rx.select.item(cat.nombre, value=str(cat.id))
+                            lambda cat: rx.select.item(
+                                cat.nombre,
+                                value=cat.id.to_string()
+                            )
                         )
                     ),
                     on_change=PostState.set_categoria_id,

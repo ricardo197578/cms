@@ -25,7 +25,23 @@ class PostState(rx.State):
     categorias: List[Category] = []
     editando_id: int | None = None
 
-    
+    # 🔹 Setter para categoria_id que valida y parsea correctamente
+    def set_categoria_id(self, value: str):
+        """Captura el ID de categoría del select y lo valida"""
+        if value:
+            # Extrae solo números del valor en caso de que venga con referencias
+            try:
+                # Si viene como string puro (ej: "1"), lo asigna directamente
+                if value.isdigit():
+                    self.categoria_id = value
+                else:
+                    # Si viene vacío o inválido, lo limpiar
+                    self.categoria_id = ""
+            except:
+                self.categoria_id = ""
+        else:
+            self.categoria_id = ""
+
     # 🔹 Cargar posts según rol
     async def cargar_posts(self):
 
@@ -49,7 +65,7 @@ class PostState(rx.State):
     # 🔹 Crear post seguro
     async def guardar_post(self):
 
-        if not self.titulo or not self.contenido:
+        if not self.titulo or not self.contenido or not self.categoria_id:
             return
 
         auth = await self.get_state(AuthState)
@@ -57,12 +73,18 @@ class PostState(rx.State):
         if not auth.user_id:
             return
 
-        crear_post(self.titulo, self.contenido, auth.user_id,int(self.categoria_id))
+        try:
+            categoria_id = int(self.categoria_id)
+            crear_post(self.titulo, self.contenido, auth.user_id, categoria_id)
 
-        self.titulo = ""
-        self.contenido = ""
-        
-        await self.cargar_posts()
+            self.titulo = ""
+            self.contenido = ""
+            self.categoria_id = ""
+            
+            await self.cargar_posts()
+        except (ValueError, TypeError):
+            # Si no puedo convertir a int, no crees el post
+            return
 
     # 🔹 Eliminar (solo admin)
     async def eliminar_post(self, post_id: int):
