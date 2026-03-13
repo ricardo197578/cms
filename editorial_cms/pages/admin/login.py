@@ -14,12 +14,14 @@ def login():
                     "Login Administrador",
                     size=rx.breakpoints(initial="5", md="7"),
                     text_align="center",
+                    color="var(--gray-12)",
                 ),
 
                 rx.link(
                     "← Volver",
                     href="/",
                     font_size=rx.breakpoints(initial="xs", md="sm"),
+                    color="var(--accent-11)",
                 ),
 
                 rx.input(
@@ -27,6 +29,10 @@ def login():
                     on_change=AuthState.set_username,
                     width="100%",
                     font_size=rx.breakpoints(initial="sm", md="md"),
+                    color="var(--gray-12)",
+                    background="var(--gray-1)",
+                    border="1px solid var(--gray-7)",
+                    _placeholder={"color": "var(--gray-10)"},
                 ),
 
                 rx.input(
@@ -35,6 +41,10 @@ def login():
                     on_change=AuthState.set_password,
                     width="100%",
                     font_size=rx.breakpoints(initial="sm", md="md"),
+                    color="var(--gray-12)",
+                    background="var(--gray-1)",
+                    border="1px solid var(--gray-7)",
+                    _placeholder={"color": "var(--gray-10)"},
                 ),
 
                 rx.button(
@@ -60,10 +70,11 @@ def login():
             padding=rx.breakpoints(initial="20px", md="32px"),
             border_radius="12px",
             box_shadow="lg",
-            background="white",
+            border="1px solid var(--gray-6)",
+            background="var(--gray-2)",
         ),
 
         height="100vh",
-        background="gray.100",
+        background="var(--gray-3)",
         padding=rx.breakpoints(initial="12px", md="16px"),
     )
