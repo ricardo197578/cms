@@ -140,20 +140,74 @@ def posts():
                     rx.cond(
                         PostState.editando_id,
 
-                        rx.button(
-                            "Actualizar Artículo",
-                            icon="refresh-cw",
-                            color_scheme="blue",
-                            on_click=PostState.actualizar_post,
-                            width=rx.breakpoints(initial="100%", sm="auto")
+                        rx.alert_dialog.root(
+                            rx.alert_dialog.trigger(
+                                rx.button(
+                                    "Actualizar Artículo",
+                                    icon="refresh-cw",
+                                    color_scheme="blue",
+                                    width=rx.breakpoints(initial="100%", sm="auto"),
+                                )
+                            ),
+                            rx.alert_dialog.content(
+                                rx.alert_dialog.title("Confirmar actualización"),
+                                rx.text("¿Deseas guardar los cambios de este artículo?"),
+                                rx.hstack(
+                                    rx.alert_dialog.cancel(
+                                        rx.button(
+                                            "Cancelar",
+                                            variant="outline",
+                                            color_scheme="gray",
+                                        )
+                                    ),
+                                    rx.alert_dialog.action(
+                                        rx.button(
+                                            "Actualizar",
+                                            color_scheme="blue",
+                                            on_click=PostState.actualizar_post,
+                                        )
+                                    ),
+                                    spacing="3",
+                                    justify="end",
+                                    width="100%",
+                                ),
+                                spacing="3",
+                            ),
                         ),
 
-                        rx.button(
-                            "Publicar Nuevo",
-                            icon="plus",
-                            color_scheme="grass",
-                            on_click=PostState.guardar_post,
-                            width=rx.breakpoints(initial="100%", sm="auto")
+                        rx.alert_dialog.root(
+                            rx.alert_dialog.trigger(
+                                rx.button(
+                                    "Guardar Nuevo",
+                                    icon="plus",
+                                    color_scheme="grass",
+                                    width=rx.breakpoints(initial="100%", sm="auto"),
+                                )
+                            ),
+                            rx.alert_dialog.content(
+                                rx.alert_dialog.title("Confirmar guardado"),
+                                rx.text("¿Deseas guardar este nuevo artículo?"),
+                                rx.hstack(
+                                    rx.alert_dialog.cancel(
+                                        rx.button(
+                                            "Cancelar",
+                                            variant="outline",
+                                            color_scheme="gray",
+                                        )
+                                    ),
+                                    rx.alert_dialog.action(
+                                        rx.button(
+                                            "Publicar",
+                                            color_scheme="grass",
+                                            on_click=PostState.guardar_post,
+                                        )
+                                    ),
+                                    spacing="3",
+                                    justify="end",
+                                    width="100%",
+                                ),
+                                spacing="3",
+                            ),
                         ),
                     ),
 
@@ -178,6 +232,32 @@ def posts():
 
             rx.vstack(
                 rx.heading("Artículos Publicados", size="5"),
+                rx.hstack(
+                    rx.input(
+                        placeholder="Buscar por título o contenido...",
+                        value=PostState.busqueda,
+                        on_change=PostState.set_busqueda,
+                        width=rx.breakpoints(initial="100%", md="360px"),
+                    ),
+                    rx.cond(
+                        PostState.busqueda,
+                        rx.button(
+                            "Limpiar",
+                            variant="soft",
+                            on_click=PostState.limpiar_busqueda,
+                        ),
+                    ),
+                    rx.spacer(),
+                    rx.badge(
+                        PostState.posts_filtrados.length().to_string() + " Resultados",
+                        variant="surface",
+                        color_scheme="gray",
+                    ),
+                    width="100%",
+                    align="center",
+                    spacing="3",
+                    flex_wrap="wrap",
+                ),
                 
                 rx.table.root(
 
@@ -254,37 +334,129 @@ def posts():
 
                                     rx.hstack(
 
-                                        rx.button(
-                                            "Editar",
-                                            icon="edit",
-                                            size="1",
-                                            variant="soft",
-                                            on_click=lambda: PostState.set_editando(post.id)
+                                        rx.alert_dialog.root(
+                                            rx.alert_dialog.trigger(
+                                                rx.button(
+                                                    "Editar",
+                                                    icon="edit",
+                                                    size="1",
+                                                    variant="soft",
+                                                )
+                                            ),
+                                            rx.alert_dialog.content(
+                                                rx.alert_dialog.title("Confirmar edición"),
+                                                rx.text("¿Deseas editar este artículo?"),
+                                                rx.hstack(
+                                                    rx.alert_dialog.cancel(
+                                                        rx.button(
+                                                            "Cancelar",
+                                                            variant="outline",
+                                                            color_scheme="gray",
+                                                        )
+                                                    ),
+                                                    rx.alert_dialog.action(
+                                                        rx.button(
+                                                            "Confirmar",
+                                                            color_scheme="blue",
+                                                            on_click=lambda: PostState.set_editando(post.id),
+                                                        )
+                                                    ),
+                                                    spacing="3",
+                                                    justify="end",
+                                                    width="100%",
+                                                ),
+                                                spacing="3",
+                                            ),
                                         ),
 
-                                        rx.button(
-                                            rx.cond(
-                                                post.publicado,
-                                                "Desactivar",
-                                                "Activar"
+                                        rx.alert_dialog.root(
+                                            rx.alert_dialog.trigger(
+                                                rx.button(
+                                                    rx.cond(
+                                                        post.publicado,
+                                                        "Desactivar",
+                                                        "Activar"
+                                                    ),
+                                                    size="1",
+                                                    variant="outline",
+                                                    color_scheme="blue",
+                                                )
                                             ),
-                                            size="1",
-                                            variant="outline",
-                                            color_scheme="blue",
-                                            on_click=lambda: PostState.toggle_publicado(post.id)
+                                            rx.alert_dialog.content(
+                                                rx.alert_dialog.title("Confirmar cambio de estado"),
+                                                rx.text(
+                                                    rx.cond(
+                                                        post.publicado,
+                                                        "¿Deseas desactivar este artículo?",
+                                                        "¿Deseas activar este artículo?",
+                                                    )
+                                                ),
+                                                rx.hstack(
+                                                    rx.alert_dialog.cancel(
+                                                        rx.button(
+                                                            "Cancelar",
+                                                            variant="outline",
+                                                            color_scheme="gray",
+                                                        )
+                                                    ),
+                                                    rx.alert_dialog.action(
+                                                        rx.button(
+                                                            "Confirmar",
+                                                            color_scheme="blue",
+                                                            on_click=lambda: PostState.toggle_publicado(post.id),
+                                                        )
+                                                    ),
+                                                    spacing="3",
+                                                    justify="end",
+                                                    width="100%",
+                                                ),
+                                                spacing="3",
+                                            ),
                                         ),
 
                                         rx.cond(
 
                                             AuthState.user_role == "admin",
 
-                                            rx.button(
-                                                "Eliminar",
-                                                icon="trash-2",
-                                                size="1",
-                                                color_scheme="red",
-                                                variant="soft",
-                                                on_click=lambda: PostState.eliminar_post(post.id)
+                                            rx.alert_dialog.root(
+                                                rx.alert_dialog.trigger(
+                                                    rx.button(
+                                                        "Eliminar",
+                                                        icon="trash-2",
+                                                        size="1",
+                                                        color_scheme="red",
+                                                        variant="soft",
+                                                    )
+                                                ),
+                                                rx.alert_dialog.content(
+                                                    rx.alert_dialog.title("Confirmar eliminación"),
+                                                    rx.text("¿Seguro que deseas eliminar este artículo?"),
+                                                    rx.text(
+                                                        "Esta acción no se puede deshacer.",
+                                                        size="1",
+                                                        color_scheme="gray",
+                                                    ),
+                                                    rx.hstack(
+                                                        rx.alert_dialog.cancel(
+                                                            rx.button(
+                                                                "Cancelar",
+                                                                variant="outline",
+                                                                color_scheme="gray",
+                                                            )
+                                                        ),
+                                                        rx.alert_dialog.action(
+                                                            rx.button(
+                                                                "Eliminar",
+                                                                color_scheme="red",
+                                                                on_click=lambda: PostState.eliminar_post(post.id),
+                                                            )
+                                                        ),
+                                                        spacing="3",
+                                                        justify="end",
+                                                        width="100%",
+                                                    ),
+                                                    spacing="3",
+                                                ),
                                             ),
                                         )
                                     )

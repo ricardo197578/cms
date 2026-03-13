@@ -31,6 +31,7 @@ class PostState(rx.State):
     # 🔹 PAGINACIÓN
     page: int = 1
     posts_per_page: int = 5
+    busqueda: str = ""
 
     # 🔹 Setter para categoria_id que valida y parsea correctamente
     def set_categoria_id(self, value: str):
@@ -209,9 +210,30 @@ class PostState(rx.State):
             self.page -= 1
 
     def siguiente_pagina(self):
-        total_paginas = (len(self.posts) + self.posts_per_page - 1) // self.posts_per_page
+        total_paginas = (len(self.posts_filtrados) + self.posts_per_page - 1) // self.posts_per_page
         if self.page < total_paginas:
             self.page += 1
+
+    def set_busqueda(self, value: str):
+        self.busqueda = value
+        self.page = 1
+
+    def limpiar_busqueda(self):
+        self.busqueda = ""
+        self.page = 1
+
+    @rx.var
+    def posts_filtrados(self) -> List[Post]:
+        texto = self.busqueda.strip().lower()
+
+        if not texto:
+            return self.posts
+
+        return [
+            post
+            for post in self.posts
+            if texto in post.titulo.lower() or texto in post.contenido.lower()
+        ]
 
     # 🔹 PROPIEDADES CALCULADAS
     @rx.var
@@ -220,11 +242,11 @@ class PostState(rx.State):
 
     @rx.var
     def puede_ir_adelante(self) -> bool:
-        total_paginas = (len(self.posts) + self.posts_per_page - 1) // self.posts_per_page
+        total_paginas = (len(self.posts_filtrados) + self.posts_per_page - 1) // self.posts_per_page
         return self.page < total_paginas
 
     @rx.var
     def posts_paginados(self) -> List[Post]:
         start = (self.page - 1) * self.posts_per_page
         end = start + self.posts_per_page
-        return self.posts[start:end]
+        return self.posts_filtrados[start:end]
