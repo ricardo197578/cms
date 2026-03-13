@@ -7,24 +7,24 @@ def footer():
             rx.vstack(
                 rx.text(
                     SiteConfigState.footer_text,
-                    font_weight="bold", # Un toque extra de estilo
+                    font_weight="bold",
+                    font_size=rx.breakpoints(initial="sm", md="md"),
                 ),
                 rx.hstack(
-                    rx.link("Facebook", href=SiteConfigState.facebook_url, color="white", _hover={"color": "#2563eb"}),
-                    rx.link("Twitter", href=SiteConfigState.twitter_url, color="white", _hover={"color": "#2563eb"}),
-                    rx.link("YouTube", href=SiteConfigState.youtube_url, color="white", _hover={"color": "#2563eb"}),
-                    rx.link("LinkedIn", href=SiteConfigState.linkedin_url, color="white", _hover={"color": "#2563eb"}),
-                    spacing="5",
+                    rx.link("Facebook", href=SiteConfigState.facebook_url, color="white", font_size=rx.breakpoints(initial="xs", md="sm"), _hover={"color": "#93c5fd"}),
+                    rx.link("Twitter", href=SiteConfigState.twitter_url, color="white", font_size=rx.breakpoints(initial="xs", md="sm"), _hover={"color": "#93c5fd"}),
+                    rx.link("YouTube", href=SiteConfigState.youtube_url, color="white", font_size=rx.breakpoints(initial="xs", md="sm"), _hover={"color": "#93c5fd"}),
+                    rx.link("LinkedIn", href=SiteConfigState.linkedin_url, color="white", font_size=rx.breakpoints(initial="xs", md="sm"), _hover={"color": "#93c5fd"}),
+                    spacing=rx.breakpoints(initial="3", md="5"),
+                    flex_wrap="wrap",
                 ),
-                spacing="3",
+                spacing=rx.breakpoints(initial="2", md="3"),
             )
         ),
-        # Estilos aplicados :
-        background_color="#111827",  # Gris oscuro moderno
-        color="#ffffff",             # Texto blanco
-        padding_top="40px",          # Espaciado superior
-        padding_bottom="40px",       # Espaciado inferior
-        width="100%",                # Para que ocupe todo el ancho
-        border_top="4px solid #2563eb", # La línea azul que conecta con tu header
+        background_color="#111827",
+        color="#ffffff",
+        padding=rx.breakpoints(initial="30px 20px", md="40px"),
+        width="100%",
+        border_top="4px solid #2563eb",
         text_align="center",
     )

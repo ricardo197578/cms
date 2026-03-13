@@ -1,4 +1,5 @@
 import reflex as rx
+from editorial_cms.components.admin_layout import AdminLayout
 from editorial_cms.states.public_state import PublicState
 from editorial_cms.states.site_config_state import SiteConfigState
 from editorial_cms.components.banner import banner
@@ -15,7 +16,8 @@ from editorial_cms.components.footer import footer
     ],
 )
 def articulos():
-    return rx.vstack(
+    return AdminLayout(
+        rx.vstack(
         # 🔹 BANNER DEL SITIO
         banner(),
         
@@ -25,8 +27,18 @@ def articulos():
                 # 🔹 COLUMNA DE ARTÍCULOS
                 rx.box(
                     rx.vstack(
-                        rx.heading("Artículos", size="6"),
-                        rx.link("← Volver", href="/"),
+                        rx.heading(
+                            "Artículos", 
+                            size=rx.breakpoints(initial="5", md="6"),
+                            color="var(--gray-12)"
+                        ),
+                        rx.link(
+                            "← Volver",
+                            href="/",
+                            font_size=rx.breakpoints(initial="sm", md="md"),
+                            color="var(--accent-11)",
+                            _hover={"opacity": "0.8"},
+                        ),
 
                         rx.hstack(
                             rx.input(
@@ -34,7 +46,9 @@ def articulos():
                                 value=PublicState.busqueda,
                                 on_change=PublicState.set_busqueda,
                                 debounce_timeout=400,
-                                width="300px",
+                                width=rx.breakpoints(initial="100%", md="300px"),
+                                font_size=rx.breakpoints(initial="sm", md="md"),
+                                padding=rx.breakpoints(initial="8px", md="10px"),
                             ),
                             rx.cond(
                                 PublicState.mostrando_resultados,
@@ -50,8 +64,9 @@ def articulos():
                             PublicState.mostrando_resultados,
                             rx.text(
                                 "Resultados para: " + PublicState.busqueda,
-                                font_size="sm",
-                                color="gray",
+                                font_size=rx.breakpoints(initial="xs", md="sm"),
+                                color="var(--gray-10)",
+                                margin_top="0.5em",
                             ),
                         ),
 
@@ -62,24 +77,38 @@ def articulos():
                                     PublicState.posts,
                                     lambda post: rx.box(
                                         rx.vstack(
-                                            rx.heading(post.titulo, size="4"),
+                                            rx.heading(
+                                                post.titulo,
+                                                size=rx.breakpoints(initial="3", md="4"),
+                                                color="var(--gray-12)",
+                                            ),
                                             rx.text(
                                                 post["fecha_publicacion"],
-                                                font_size="sm",
-                                                color="gray",
+                                                font_size=rx.breakpoints(initial="xs", md="sm"),
+                                                color="var(--gray-10)",
                                             ),
-                                            rx.text(post.contenido[:120] + "..."),
+                                            rx.text(
+                                                post.contenido[:120] + "...",
+                                                font_size=rx.breakpoints(initial="sm", md="md"),
+                                                color="var(--gray-11)",
+                                            ),
                                             rx.link(
-                                                "Leer más",
+                                                "Leer más →",
                                                 href="/articulo/" + post.slug,
+                                                font_size=rx.breakpoints(initial="sm", md="md"),
+                                                color="var(--accent-11)",
+                                                _hover={"color": "var(--accent-12)"},
                                             ),
-                                            spacing="2",
+                                            spacing=rx.breakpoints(initial="2", md="2"),
                                             align="start",
                                         ),
-                                        padding="1em",
-                                        border="1px solid #eee",
+                                        padding=rx.breakpoints(initial="1.2em", md="1.5em"),
+                                        border="1px solid var(--gray-6)",
                                         border_radius="8px",
                                         width="100%",
+                                        box_shadow="0 1px 3px rgba(0, 0, 0, 0.1)",
+                                        _hover={"box_shadow": "0 4px 12px rgba(0, 0, 0, 0.15)", "transform": "translateY(-2px)"},
+                                        transition="all 0.2s ease-in-out",
                                     ),
                                 ),
 
@@ -105,25 +134,39 @@ def articulos():
                         width="100%",
                     ),
                     # Responsivo: 100% en móvil, 70% en escritorio
-                    width=["100%", "100%", "70%"], 
-                    padding_bottom=["2em", "2em", "0px"],
+                    width=["100%", "100%", "70%"],
+                    padding_bottom=rx.breakpoints(initial="1.5em", md="2em", lg="0px"),
+                    padding_x=rx.breakpoints(initial="1em", md="0"),
+                    spacing=rx.breakpoints(initial="3", md="4"),
                 ),
 
                 # 🔹 SIDEBAR
                 rx.box(
                     rx.vstack(
-                        rx.divider(display=["block", "block", "none"], margin_y="1em"), # Divisor solo en móvil
-                        rx.heading("Recientes", size="4"),
+                        rx.divider(display=rx.breakpoints(initial="block", md="block", lg="none"), margin_y="1em"),
+                        rx.heading(
+                            "Recientes",
+                            size=rx.breakpoints(initial="4", md="5"),
+                            color="var(--gray-12)",
+                        ),
                         rx.foreach(
                             PublicState.recientes,
                             lambda post: rx.link(
                                 post.titulo,
                                 href="/articulo/" + post.slug,
-                                font_size="sm",
+                                font_size=rx.breakpoints(initial="sm", md="md"),
+                                color="var(--accent-11)",
+                                _hover={"color": "var(--accent-12)", "text_decoration": "underline"},
+                                display="block",
+                                padding_y="0.5em",
                             ),
                         ),
-                        rx.divider(),
-                        rx.heading("Categorías", size="4"),
+                        rx.divider(margin_y="1.5em"),
+                        rx.heading(
+                            "Categorías",
+                            size=rx.breakpoints(initial="4", md="5"),
+                            color="var(--gray-12)",
+                        ),
                         rx.cond(
                             PublicState.hay_categoria_activa,
                             rx.button(
@@ -159,16 +202,19 @@ def articulos():
                         align="start",
                     ),
                     # Responsivo: 100% en móvil, 30% en escritorio
-                    width=["100%", "100%", "30%"],
-                    padding_left=["0px", "0px", "2em"],
+                    width=rx.breakpoints(initial="100%", md="100%", lg="30%"),
+                    padding_left=rx.breakpoints(initial="1em", md="0", lg="2em"),
+                    spacing=rx.breakpoints(initial="2", md="3"),
                 ),
-                wrap="wrap", # Permite que el sidebar baje si no hay espacio
+                wrap="wrap",
                 width="100%",
+                gap=rx.breakpoints(initial="1em", md="2em"),
             ),
-            padding_y="2em",
+            padding=rx.breakpoints(initial="1.5em", md="2em"),
             max_width="1100px",
-            background="white",
-            border_radius="12px",
+            background="var(--gray-1)",
+            border_radius="8px",
+            box_shadow="0 1px 3px rgba(0, 0, 0, 0.05)",
         ),
 
         # 🔹 FOOTER DEL SITIO
@@ -177,4 +223,8 @@ def articulos():
         width="100%",
         align="center",
         min_height="100vh",
+        ),
+        show_sidebar=False,
+        content_padding=False,
+        background="var(--gray-1)",
     )

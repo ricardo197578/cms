@@ -1,4 +1,5 @@
 import reflex as rx
+from editorial_cms.components.admin_layout import AdminLayout
 from editorial_cms.states.auth_state import AuthState
 from editorial_cms.states.post_state import PostState
 from editorial_cms.components.container import content_container
@@ -267,6 +268,4 @@ def posts():
         width="100%",
     )
 
-    return content_container(
-        contenido
-    )
+    return AdminLayout(content_container(contenido))

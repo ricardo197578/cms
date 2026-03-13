@@ -16,7 +16,7 @@ def admin_header():
         rx.spacer(),
 
         # Usuario
-        rx.hstack(
+        rx.flex(
             rx.icon("user"),
 
             rx.text(
@@ -38,13 +38,17 @@ def admin_header():
                 on_click=AuthState.logout
             ),
 
-            spacing="3",
-            align="center"
+            gap="10px",
+            align="center",
+            wrap=rx.breakpoints(initial="wrap", md="nowrap"),
+            justify=rx.breakpoints(initial="start", md="end"),
         ),
 
         width="100%",
-        padding="12px",
-        border_bottom="1px solid #e5e7eb",
-        bg="white",
-        align="center"
+        padding=rx.breakpoints(initial="10px 14px", md="12px 18px", lg="12px 20px"),
+        border_bottom="1px solid var(--gray-6)",
+        bg="var(--gray-1)",
+        align="center",
+        justify="between",
+        gap="10px",
     )

@@ -13,12 +13,22 @@ def sidebar_item(icon, text, href):
             align="center"
         ),
         href=href,
-        width="100%",
-        padding="8px",
-        border_radius="6px",
+        width=rx.breakpoints(initial="auto", lg="100%"),
+        padding=rx.breakpoints(initial="7px 10px", lg="8px"),
+        border_radius="8px",
+        color="var(--gray-12)",
+        background="transparent",
+        border="1px solid transparent",
         _hover={
-            "background_color": "#e5e7eb"
-        }
+            "background_color": "var(--gray-3)",
+            "border_color": "var(--gray-6)",
+            "text_decoration": "none",
+        },
+        _focus_visible={
+            "outline": "2px solid var(--accent-8)",
+            "outline_offset": "2px",
+        },
+        text_decoration="none",
     )
 
 
@@ -30,17 +40,27 @@ def admin_sidebar():
 
             # LOGO
             # Actualiza el sidebar nombre del sitio automaticamente
-            rx.heading(SiteConfigState.site_name, size="6"),                  
+            rx.heading(
+                SiteConfigState.site_name,
+                size=rx.breakpoints(initial="4", md="5", lg="6"),
+                color="var(--gray-12)",
+            ),
 
             rx.divider(),
 
             # MENU PRINCIPAL
-            sidebar_item("layout-dashboard", "Dashboard", "/admin/dashboard"),
-            sidebar_item("file-text", "Crud Artículos", "/admin/posts"),
-            sidebar_item("users", "Crud Usuarios", "/admin/usuarios"),
-            sidebar_item("settings", "Editar bienvenida", "/admin/configuracion"),
-            sidebar_item("settings","Crud Categorías", "/admin/categorias"),
-            
+            rx.flex(
+                sidebar_item("layout-dashboard", "Dashboard", "/admin/dashboard"),
+                sidebar_item("file-text", "Crud Artículos", "/admin/posts"),
+                sidebar_item("users", "Crud Usuarios", "/admin/usuarios"),
+                sidebar_item("settings", "Editar bienvenida", "/admin/configuracion"),
+                sidebar_item("settings", "Crud Categorías", "/admin/categorias"),
+                direction=rx.breakpoints(initial="row", lg="column"),
+                wrap=rx.breakpoints(initial="wrap", lg="nowrap"),
+                gap="8px",
+                width="100%",
+            ),
+
             rx.spacer(),
 
             rx.divider(),
@@ -55,7 +75,7 @@ def admin_sidebar():
                 on_click=AuthState.logout,
                 variant="soft",
                 color_scheme="red",
-                width="100%"
+                width=rx.breakpoints(initial="100%", lg="100%")
             ),
 
             spacing="4",
@@ -63,9 +83,14 @@ def admin_sidebar():
             width="100%",
         ),
 
-        width="240px",
-        height="100vh",
-        padding="20px",
-        border_right="1px solid #e5e7eb",
-        background_color="#f9fafb",
+        width=rx.breakpoints(initial="100%", md="100%", lg="260px"),
+        height=rx.breakpoints(initial="auto", lg="100dvh"),
+        min_width=rx.breakpoints(initial="auto", lg="260px"),
+        padding=rx.breakpoints(initial="14px", md="16px", lg="20px"),
+        border_right=rx.breakpoints(initial="none", lg="1px solid var(--gray-6)"),
+        border_bottom=rx.breakpoints(initial="1px solid var(--gray-6)", lg="none"),
+        background_color="var(--gray-2)",
+        position=rx.breakpoints(initial="static", lg="sticky"),
+        top=rx.breakpoints(initial="auto", lg="0"),
+        z_index="10",
     )

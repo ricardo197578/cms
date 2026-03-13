@@ -1,4 +1,5 @@
 import reflex as rx
+from editorial_cms.components.admin_layout import AdminLayout
 from editorial_cms.states.categoria_admin_state import CategoriaAdminState
 from editorial_cms.components.container import content_container
 
@@ -249,10 +250,12 @@ def categorias():
         spacing="5",
     )
 
-    return content_container(
-        rx.vstack(
-            contenido,
-            dialogo,
-            width="100%"
+    return AdminLayout(
+        content_container(
+            rx.vstack(
+                contenido,
+                dialogo,
+                width="100%"
+            )
         )
     )

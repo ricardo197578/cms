@@ -1,4 +1,5 @@
 import reflex as rx  # Importa la librería principal de Reflex
+from editorial_cms.components.admin_layout import AdminLayout
 from editorial_cms.states.site_config_state import SiteConfigState  # Importa el estado que maneja la configuración del sitio
 from editorial_cms.components.banner import banner  # Importa el componente banner (aunque no se usa en esta página)
 from editorial_cms.components.footer import footer  # Importa el componente footer para el pie de página
@@ -8,7 +9,8 @@ from editorial_cms.components.footer import footer  # Importa el componente foot
     on_load=SiteConfigState.cargar_config  # Función que se ejecuta al cargar la página para obtener la configuración
 )
 def index():  # Función que define el contenido de la página principal
-    return rx.box(  # Contenedor principal de la página (div)
+    return AdminLayout(
+        rx.box(  # Contenedor principal de la página (div)
         rx.vstack(  # Organiza los elementos verticalmente (stack vertical)
             # HEADER  # Comentario: sección del encabezado
             rx.center(  # Centra el contenido horizontalmente
@@ -76,4 +78,8 @@ def index():  # Función que define el contenido de la página principal
 
         width="100%",  # Ancho completo del box principal
 
+        ),
+        show_sidebar=False,
+        content_padding=False,
+        background="var(--gray-1)",
     )

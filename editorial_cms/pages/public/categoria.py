@@ -1,4 +1,5 @@
 import reflex as rx
+from editorial_cms.components.admin_layout import AdminLayout
 from editorial_cms.states.public_state import PublicState
 
 
@@ -8,17 +9,25 @@ from editorial_cms.states.public_state import PublicState
 )
 def categoria():
 
-    return rx.container(
-        rx.vstack(
+    return AdminLayout(
+        rx.container(
+            rx.vstack(
 
             # 🔹 Título categoría
             rx.heading(
                 "Categoría: " + PublicState.nombre_categoria_actual,
-                size="6",
+                size=rx.breakpoints(initial="5", md="6"),
+                color="var(--gray-12)",
             ),
 
-            rx.divider(),
-            rx.link("← Volver", href="/articulos"),
+            rx.divider(border_color="var(--gray-6)"),
+            rx.link(
+                "← Volver",
+                href="/articulos",
+                font_size=rx.breakpoints(initial="sm", md="md"),
+                color="var(--accent-11)",
+                _hover={"opacity": "0.8"},
+            ),
 
             # 🔹 Listado de posts
             rx.foreach(
@@ -43,9 +52,13 @@ def categoria():
 
             
 
-            spacing="4",
-            align="start",
-            width="100%",
+                spacing="4",
+                align="start",
+                width="100%",
+            ),
+            padding="2em",
         ),
-        padding="2em",
+        show_sidebar=False,
+        content_padding=False,
+        background="var(--gray-1)",
     )

@@ -1,6 +1,6 @@
 import reflex as rx
 from editorial_cms.states.auth_state import AuthState
-from editorial_cms.components.admin_layout import admin_layout
+from editorial_cms.components.admin_layout import AdminLayout
 
 @rx.page(
     route="/admin/dashboard",
@@ -102,4 +102,4 @@ def dashboard():
         align_items="stretch",
     )
 
-    return admin_layout(contenido)
+    return AdminLayout(contenido)
