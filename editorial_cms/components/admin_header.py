@@ -20,12 +20,12 @@ def admin_header():
             rx.icon("user"),
 
             rx.text(
-                AuthState.usuario_logueado["username"],
+                AuthState.username_actual,
                 weight="bold"
             ),
 
             rx.badge(
-                AuthState.usuario_logueado["rol"],
+                AuthState.user_role,
                 color_scheme="indigo",
                 variant="soft"
             ),

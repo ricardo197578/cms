@@ -93,6 +93,48 @@ def posts():
                     width="100%",
                 ),
 
+                # 🖼️ SECCIÓN DE IMAGEN DESTACADA
+                rx.card(
+                    rx.vstack(
+                        rx.hstack(
+                            rx.icon("image"),
+                            rx.text("Imagen Destacada", weight="bold"),
+                            spacing="2",
+                            width="100%",
+                        ),
+
+                        rx.upload(
+                            rx.text("Selecciona o arrastra una imagen"),
+                            id="upload_imagen",
+                            accept={"image/*": [".png", ".jpg", ".jpeg", ".webp"]},
+                            max_files=1,
+                            on_drop=PostState.subir_imagen,
+                            width="100%",
+                            padding="1.5em",
+                        ),
+
+                        rx.cond(
+                            PostState.imagen_destacada,
+                            rx.vstack(
+                                rx.text("Imagen cargada:", size="2", color_scheme="gray"),
+                                rx.image(
+                                    src=rx.get_upload_url(PostState.imagen_destacada),
+                                    width="100%",
+                                    max_height="200px",
+                                    object_fit="cover",
+                                    border_radius="8px",
+                                ),
+                                width="100%",
+                            ),
+                        ),
+
+                        width="100%",
+                        spacing="3",
+                    ),
+                    width="100%",
+                    variant="surface",
+                ),
+
                 rx.flex(
 
                     rx.cond(
@@ -161,6 +203,16 @@ def posts():
                                 # TÍTULO
                                 rx.table.cell(
                                     rx.vstack(
+                                        rx.cond(
+                                            post.imagen_destacada,
+                                            rx.image(
+                                                src=rx.get_upload_url(post.imagen_destacada),
+                                                width="88px",
+                                                height="56px",
+                                                object_fit="cover",
+                                                border_radius="6px",
+                                            ),
+                                        ),
                                         rx.text(
                                             post.titulo,
                                             weight="bold"
@@ -224,7 +276,7 @@ def posts():
 
                                         rx.cond(
 
-                                            AuthState.usuario_logueado["rol"] == "admin",
+                                            AuthState.user_role == "admin",
 
                                             rx.button(
                                                 "Eliminar",

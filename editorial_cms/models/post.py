@@ -13,6 +13,7 @@ class Post(SQLModel, table=True):
     slug: str = Field(index=True, unique=True)
 
     contenido: str
+    imagen_destacada: Optional[str] = Field(default=None)  # Nombre del archivo de imagen
     autor_id: int
 
     publicado: bool = Field(default=False)

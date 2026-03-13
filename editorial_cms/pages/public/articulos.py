@@ -77,6 +77,16 @@ def articulos():
                                     PublicState.posts,
                                     lambda post: rx.box(
                                         rx.vstack(
+                                            rx.cond(
+                                                post.imagen_destacada,
+                                                rx.image(
+                                                    src=rx.get_upload_url(post.imagen_destacada),
+                                                    width="100%",
+                                                    height=rx.breakpoints(initial="160px", md="220px"),
+                                                    object_fit="cover",
+                                                    border_radius="8px",
+                                                ),
+                                            ),
                                             rx.heading(
                                                 post.titulo,
                                                 size=rx.breakpoints(initial="3", md="4"),

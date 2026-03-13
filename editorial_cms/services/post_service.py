@@ -5,7 +5,7 @@ from editorial_cms.models.post import Post
 from editorial_cms.models.category import Category
 import re
 
-def crear_post(titulo, contenido, autor_id, categoria_id):
+def crear_post(titulo, contenido, autor_id, categoria_id, imagen_destacada=None):
     with Session(engine) as session:
 
         slug = generar_slug_unico(titulo)
@@ -15,11 +15,14 @@ def crear_post(titulo, contenido, autor_id, categoria_id):
             slug=slug,
             contenido=contenido,
             autor_id=autor_id,
-            categoria_id=categoria_id
+            categoria_id=categoria_id,
+            imagen_destacada=imagen_destacada
         )
 
         session.add(nuevo)
         session.commit()
+        session.refresh(nuevo)
+        return nuevo
 
 def obtener_posts():
     with Session(engine) as session:
@@ -46,12 +49,14 @@ def eliminar_post(post_id: int):
             session.commit()
 
 
-def actualizar_post(post_id: int, titulo: str, contenido: str):
+def actualizar_post(post_id: int, titulo: str, contenido: str, imagen_destacada=None):
     with Session(engine) as session:
         post = session.get(Post, post_id)
         if post:
             post.titulo = titulo
             post.contenido = contenido
+            if imagen_destacada is not None:
+                post.imagen_destacada = imagen_destacada
             session.add(post)
             session.commit()
 
@@ -65,11 +70,7 @@ def toggle_publicado(post_id: int):
             session.commit()
 
 def obtener_publicados():
-    with Session(engine) as session:
-        statement = select(Post).where(Post.publicado == True)
-        return session.exec(statement).all()
-    
-def obtener_publicados():
+    """Obtiene todos los posts publicados ordenados por fecha descendente."""
     with Session(engine) as session:
         return session.exec(
             select(Post)

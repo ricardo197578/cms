@@ -23,6 +23,16 @@ from editorial_cms.services.post_service import buscar_posts
 from editorial_cms.services.post_service import contar_posts
 from urllib.parse import parse_qs, urlparse
 
+
+def _obtener_slug_desde_url(url: str, prefijo: str) -> str:
+    path = urlparse(url).path.strip("/")
+    partes = path.split("/")
+
+    if len(partes) >= 2 and partes[0] == prefijo:
+        return partes[1]
+
+    return ""
+
 class PublicState(rx.State):
 
     # 🔹 LISTADO GENERAL
@@ -116,6 +126,7 @@ class PublicState(rx.State):
                 slug=post.slug,
                 contenido=post.contenido,
                 fecha_publicacion=post.fecha_publicacion.strftime("%d/%m/%Y"),
+                imagen_destacada=post.imagen_destacada,
             )
             for post in posts_db
         ]
@@ -124,7 +135,10 @@ class PublicState(rx.State):
         self.categorias_sidebar = obtener_categorias_con_contador()
 
     async def cargar_por_slug(self):
+
         slug = self.router.page.params.get("slug")
+
+        self.post_actual = None
 
         if not slug:
             self.post_actual = None
@@ -133,7 +147,7 @@ class PublicState(rx.State):
         self.post_actual = obtener_post_por_slug(slug)
 
     async def cargar_posts_por_categoria_slug(self):
-        slug = self.router.page.params.get("slug")
+        slug = _obtener_slug_desde_url(self.router.url, "categoria")
 
         if not slug:
             self.posts_categoria = []
@@ -183,6 +197,7 @@ class PublicState(rx.State):
                 slug=post.slug,
                 contenido=post.contenido,
                 fecha_publicacion=post.fecha_publicacion.strftime("%d/%m/%Y"),
+                imagen_destacada=post.imagen_destacada,
             )
             for post in posts_db
         ]

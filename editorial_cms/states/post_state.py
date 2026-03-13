@@ -1,5 +1,7 @@
 import reflex as rx
 from typing import List
+from pathlib import Path
+from uuid import uuid4
 from editorial_cms.models.post import Post
 from editorial_cms.models.category import Category
 from editorial_cms.states.auth_state import AuthState
@@ -20,6 +22,7 @@ class PostState(rx.State):
     titulo: str = ""
     contenido: str = ""
     categoria_id: str = ""
+    imagen_destacada: str = ""  # Nombre del archivo de imagen
 
     posts: List[Post] = []
     categorias: List[Category] = []
@@ -68,6 +71,44 @@ class PostState(rx.State):
     async def cargar_categorias(self):
         self.categorias = obtener_categorias()
 
+    # 🖼️ Subir imagen destacada
+    async def subir_imagen(self, files: list[rx.UploadFile]):
+        """Sube la imagen destacada del artículo."""
+        if not files:
+            print("✗ No hay archivos para subir")
+            return
+        
+        try:
+            archivo = files[0]
+            if not archivo.filename:
+                print("✗ El archivo no tiene nombre")
+                return
+            
+            # Generar nombre único para evitar colisiones
+            extension = Path(archivo.filename).suffix.lower()
+            nombre_unico = f"img_{uuid4().hex}{extension}"
+            
+            # Obtener ruta de destino
+            ruta_upload = Path(rx.get_upload_dir())
+            ruta_upload.mkdir(parents=True, exist_ok=True)
+            ruta_destino = ruta_upload / nombre_unico
+            
+            # Leer y guardar el archivo
+            contenido = await archivo.read()
+            ruta_destino.write_bytes(contenido)
+            
+            # Verificar que el archivo se guardó
+            if ruta_destino.exists() and ruta_destino.stat().st_size > 0:
+                self.imagen_destacada = nombre_unico
+                print(f"✓ Imagen guardada: {nombre_unico}")
+            else:
+                print(f"✗ El archivo no se guardó correctamente")
+        
+        except Exception as e:
+            print(f"✗ Error al subir imagen: {e}")
+            import traceback
+            traceback.print_exc()
+
     # 🔹 Crear post seguro
     async def guardar_post(self):
 
@@ -81,11 +122,18 @@ class PostState(rx.State):
 
         try:
             categoria_id = int(self.categoria_id)
-            crear_post(self.titulo, self.contenido, auth.user_id, categoria_id)
+            crear_post(
+                self.titulo, 
+                self.contenido, 
+                auth.user_id, 
+                categoria_id,
+                imagen_destacada=self.imagen_destacada or None
+            )
 
             self.titulo = ""
             self.contenido = ""
             self.categoria_id = ""
+            self.imagen_destacada = ""
             
             await self.cargar_posts()
         except (ValueError, TypeError):
@@ -114,6 +162,8 @@ class PostState(rx.State):
         self.editando_id = post_id
         self.titulo = post.titulo
         self.contenido = post.contenido
+        self.categoria_id = str(post.categoria_id) if post.categoria_id else ""
+        self.imagen_destacada = post.imagen_destacada or ""
 
     # 🔹 Actualizar post con control por autor
     async def actualizar_post(self):
@@ -133,10 +183,17 @@ class PostState(rx.State):
             if post.autor_id != auth.user_id:
                 return
 
-        actualizar_post(self.editando_id, self.titulo, self.contenido)
+        actualizar_post(
+            self.editando_id, 
+            self.titulo, 
+            self.contenido,
+            imagen_destacada=self.imagen_destacada or None
+        )
 
         self.titulo = ""
         self.contenido = ""
+        self.categoria_id = ""
+        self.imagen_destacada = ""
         self.editando_id = None
 
         await self.cargar_posts()

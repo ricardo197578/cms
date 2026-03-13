@@ -13,7 +13,7 @@ def dashboard():
         rx.flex(
             rx.vstack(
                 rx.heading(
-                    f"¡Hola, {AuthState.usuario_logueado['username']}!", 
+                    "¡Hola, " + AuthState.username_actual + "!",
                     size="8"
                 ),
                 rx.text("Bienvenido al panel de control de Editorial CMS", color_scheme="gray"),
@@ -22,7 +22,7 @@ def dashboard():
             rx.spacer(),
             rx.badge(
                 rx.icon("user", size=16),
-                AuthState.usuario_logueado["rol"],
+                AuthState.user_role,
                 size="3", 
                 color_scheme="indigo", 
                 variant="soft",

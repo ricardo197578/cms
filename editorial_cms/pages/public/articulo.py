@@ -131,6 +131,17 @@ def articulo():
 
                 rx.divider(),
 
+                rx.cond(
+                    PublicState.post_actual.imagen_destacada,
+                    rx.image(
+                        src=rx.get_upload_url(PublicState.post_actual.imagen_destacada),
+                        width="100%",
+                        max_height=rx.breakpoints(initial="260px", md="420px"),
+                        object_fit="cover",
+                        border_radius="10px",
+                    ),
+                ),
+
                 # 🔹 CONTENIDO
                 rx.box(
                     rx.markdown(
