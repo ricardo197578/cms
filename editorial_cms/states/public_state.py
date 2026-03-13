@@ -41,6 +41,7 @@ class PublicState(rx.State):
 
     # 🔹 DETALLE
     post_actual: Optional[Post] = None
+    slug_objetivo: str = ""
 
     # 🔹 SIDEBAR TIPADO CORRECTAMENTE
     categorias_sidebar: List[CategoriaSidebar] = []
@@ -62,6 +63,9 @@ class PublicState(rx.State):
     per_page: int = 5
 
     total_posts: int = 0
+
+    # 🔹 DETALLE: estado de carga para evitar mostrar artículo viejo
+    cargando_post: bool = False
 
     #propiedad computada para mostrar leyenda de resultado de busqueda
     @rx.var
@@ -89,6 +93,14 @@ class PublicState(rx.State):
     @rx.var
     def puede_ir_adelante(self) -> bool:
         return self.page < self.total_paginas 
+
+    @rx.var
+    def slug_en_url(self) -> str:
+        return _obtener_slug_desde_url(self.router.url, "articulo")
+
+    @rx.var
+    def post_corresponde_a_url(self) -> bool:
+        return bool(self.post_actual and self.post_actual.slug == self.slug_en_url)
     
     # Construir url dinamicamente
     def construir_url(self):
@@ -134,17 +146,34 @@ class PublicState(rx.State):
     async def cargar_categorias_sidebar(self):
         self.categorias_sidebar = obtener_categorias_con_contador()
 
+   
     async def cargar_por_slug(self):
+        slug = _obtener_slug_desde_url(self.router.url, "articulo")
+        self.slug_objetivo = slug
 
-        slug = self.router.page.params.get("slug")
-
+        self.cargando_post = True
         self.post_actual = None
+        yield
 
         if not slug:
             self.post_actual = None
+            self.cargando_post = False
             return
 
         self.post_actual = obtener_post_por_slug(slug)
+        self.cargando_post = False
+
+    async def abrir_articulo(self, slug: str):
+        self.slug_objetivo = slug
+        self.cargando_post = True
+        self.post_actual = None
+        return rx.redirect(f"/articulo/{slug}")
+
+    def iniciar_carga_post(self):
+        self.cargando_post = True
+        self.post_actual = None
+    
+
 
     async def cargar_posts_por_categoria_slug(self):
         slug = _obtener_slug_desde_url(self.router.url, "categoria")

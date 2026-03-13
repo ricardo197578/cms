@@ -11,172 +11,193 @@ from editorial_cms.components.container import content_container
 def articulo():
 
     return AdminLayout(
+
+        # 🔹 PRIMERA CONDICIÓN → LOADING
         rx.cond(
-            PublicState.post_actual,
+            PublicState.cargando_post,
 
-            content_container(
-
-                rx.vstack(
-
-                # 🔹 BREADCRUMB
-                rx.flex(
-                    rx.link(
-                        rx.hstack(
-                            rx.icon("arrow-left", size=18),
-                            rx.text(
-                                "Volver",
-                                font_size=rx.breakpoints(initial="sm", md="md"),
-                            ),
-                            spacing="2"
-                        ),
-                        href="/articulos",
-                        text_decoration="none",
-                        color="var(--accent-11)",
-                        _hover={"color": "var(--accent-12)", "opacity": "0.8"},
-                    ),
-
-                    rx.spacer(),
-
-                    rx.hstack(
-                        rx.link(
-                            "Inicio",
-                            href="/",
-                            color="var(--gray-10)",
-                            underline="none",
-                            font_size=rx.breakpoints(initial="xs", md="sm"),
-                            _hover={"color": "var(--gray-12)"},
-                        ),
-                        rx.text("/", color="var(--gray-9)", font_size=rx.breakpoints(initial="xs", md="sm")),
-
-                        rx.cond(
-                            PublicState.post_actual.categoria,
-                            rx.link(
-                                PublicState.post_actual.categoria.nombre,
-                                href="/categoria/" + PublicState.post_actual.categoria.slug,
-                                color="var(--accent-11)",
-                                underline="none",
-                                font_size=rx.breakpoints(initial="xs", md="sm"),
-                                _hover={"color": "var(--accent-12)"},
-                            ),
-                        ),
-
-                        spacing="2",
-                        align="center",
-                    ),
-
-                    width="100%",
-                    align="center",
-                    padding_bottom=rx.breakpoints(initial="1em", md="1.5em"),
-                    padding_x=rx.breakpoints(initial="0.5em", md="0"),
-                    border_bottom="1px solid var(--gray-6)",
-                    margin_bottom=rx.breakpoints(initial="1.5em", md="2em"),
-                    flex_wrap="wrap",
-                ),
-
-                # 🔹 CABECERA
-                rx.vstack(
-
-                    rx.cond(
-                        PublicState.post_actual.categoria,
-                        rx.link(
-                            rx.badge(
-                                PublicState.post_actual.categoria.nombre,
-                                variant="soft",
-                                color_scheme="blue",
-                                size="2",
-                            ),
-                            href="/categoria/" + PublicState.post_actual.categoria.slug,
-                            _hover={"opacity": "0.8"},
-                        ),
-                    ),
-
-                    rx.heading(
-                        PublicState.post_actual.titulo,
-                        size=rx.breakpoints(initial="5", md="8"),
-                        weight="bold",
-                        color="var(--gray-12)",
-                        line_height="1.3",
-                    ),
-
-                    rx.hstack(
-                        rx.icon(
-                            "calendar",
-                            size=16,
-                            color="var(--gray-10)",
-                        ),
-                        rx.text(
-                            PublicState.post_actual.fecha_publicacion,
-                            size="2",
-                            color="var(--gray-10)",
-                        ),
-                        rx.text("•", color="var(--gray-9)"),
-                        rx.icon(
-                            "clock",
-                            size=16,
-                            color="var(--gray-10)",
-                        ),
-                        rx.text(
-                            "5 min de lectura",
-                            size="2",
-                            color="var(--gray-10)",
-                        ),
-                        spacing="2",
-                        align="center",
-                        flex_wrap="wrap",
-                    ),
-
-                    spacing=rx.breakpoints(initial="2", md="3"),
-                    width="100%",
-                ),
-
-                rx.divider(),
-
-                rx.cond(
-                    PublicState.post_actual.imagen_destacada,
-                    rx.image(
-                        src=rx.get_upload_url(PublicState.post_actual.imagen_destacada),
-                        width="100%",
-                        max_height=rx.breakpoints(initial="260px", md="420px"),
-                        object_fit="cover",
-                        border_radius="10px",
-                    ),
-                ),
-
-                # 🔹 CONTENIDO
-                rx.box(
-                    rx.markdown(
-                        PublicState.post_actual.contenido,
-                    ),
-                    width="100%",
-                    style={
-                        "font-size": "clamp(0.95rem, 2vw, 1.1rem)",
-                        "line-height": "1.9",
-                        "color": "var(--gray-12)",
-                        "word-break": "break-word",
-                    },
-                ),
-
-                spacing=rx.breakpoints(initial="4", md="6"),
-                width="100%",
-                align="start",
-                )
-            ),
-
-            # 🔹 ERROR
             rx.center(
                 rx.vstack(
-                    rx.heading("Artículo no encontrado", size="6"),
-                    rx.link(
-                        rx.button("Regresar a Artículos", color_scheme="blue"),
-                        href="/articulos",
-                    ),
-                    spacing="4",
+                    rx.spinner(size="3"),
+                    rx.text("Cargando artículo..."),
+                    spacing="3",
                 ),
+                height="60vh",
                 width="100%",
-                height="100vh",
+            ),
+
+            # 🔹 SEGUNDA CONDICIÓN → ARTÍCULO O ERROR
+            rx.cond(
+                PublicState.post_corresponde_a_url,
+
+                content_container(
+
+                    rx.vstack(
+
+                        # 🔹 BREADCRUMB
+                        rx.flex(
+                            rx.link(
+                                rx.hstack(
+                                    rx.icon("arrow-left", size=18),
+                                    rx.text(
+                                        "Volver",
+                                        font_size=rx.breakpoints(initial="sm", md="md"),
+                                    ),
+                                    spacing="2"
+                                ),
+                                href="/articulos",
+                                text_decoration="none",
+                                color="var(--accent-11)",
+                                _hover={"color": "var(--accent-12)", "opacity": "0.8"},
+                            ),
+
+                            rx.spacer(),
+
+                            rx.hstack(
+                                rx.link(
+                                    "Inicio",
+                                    href="/",
+                                    color="var(--gray-10)",
+                                    underline="none",
+                                    font_size=rx.breakpoints(initial="xs", md="sm"),
+                                    _hover={"color": "var(--gray-12)"},
+                                ),
+
+                                rx.text("/", color="var(--gray-9)"),
+
+                                rx.cond(
+                                    PublicState.post_actual.categoria,
+                                    rx.link(
+                                        PublicState.post_actual.categoria.nombre,
+                                        href="/categoria/" + PublicState.post_actual.categoria.slug,
+                                        color="var(--accent-11)",
+                                        underline="none",
+                                        font_size=rx.breakpoints(initial="xs", md="sm"),
+                                        _hover={"color": "var(--accent-12)"},
+                                    ),
+                                ),
+
+                                spacing="2",
+                                align="center",
+                            ),
+
+                            width="100%",
+                            align="center",
+                            padding_bottom=rx.breakpoints(initial="1em", md="1.5em"),
+                            border_bottom="1px solid var(--gray-6)",
+                            margin_bottom=rx.breakpoints(initial="1.5em", md="2em"),
+                            flex_wrap="wrap",
+                        ),
+
+                        # 🔹 CABECERA
+                        rx.vstack(
+
+                            rx.cond(
+                                PublicState.post_actual.categoria,
+                                rx.link(
+                                    rx.badge(
+                                        PublicState.post_actual.categoria.nombre,
+                                        variant="soft",
+                                        color_scheme="blue",
+                                        size="2",
+                                    ),
+                                    href="/categoria/" + PublicState.post_actual.categoria.slug,
+                                ),
+                            ),
+
+                            rx.heading(
+                                PublicState.post_actual.titulo,
+                                size=rx.breakpoints(initial="5", md="8"),
+                                weight="bold",
+                                color="var(--gray-12)",
+                            ),
+
+                            rx.hstack(
+                                rx.icon("calendar", size=16),
+                                rx.text(
+                                    PublicState.post_actual.fecha_publicacion,
+                                    size="2",
+                                    color="var(--gray-10)",
+                                ),
+                                rx.text("•"),
+                                rx.icon("clock", size=16),
+                                rx.text(
+                                    "5 min de lectura",
+                                    size="2",
+                                    color="var(--gray-10)",
+                                ),
+                                spacing="2",
+                                align="center",
+                                flex_wrap="wrap",
+                            ),
+
+                            spacing="3",
+                            width="100%",
+                        ),
+
+                        rx.divider(),
+
+                        rx.cond(
+                            PublicState.post_actual.imagen_destacada,
+                            rx.image(
+                                src=rx.get_upload_url(PublicState.post_actual.imagen_destacada),
+                                width="100%",
+                                max_height=rx.breakpoints(initial="260px", md="420px"),
+                                object_fit="cover",
+                                border_radius="10px",
+                            ),
+                        ),
+
+                        # 🔹 CONTENIDO
+                        rx.box(
+                            rx.markdown(
+                                PublicState.post_actual.contenido,
+                            ),
+                            width="100%",
+                            style={
+                                "font-size": "clamp(0.95rem, 2vw, 1.1rem)",
+                                "line-height": "1.9",
+                                "color": "var(--gray-12)",
+                                "word-break": "break-word",
+                            },
+                        ),
+
+                        spacing=rx.breakpoints(initial="4", md="6"),
+                        width="100%",
+                        align="start",
+                    )
+                ),
+
+                rx.cond(
+                    PublicState.post_actual,
+                    rx.center(
+                        rx.vstack(
+                            rx.spinner(size="3"),
+                            rx.text("Cargando artículo..."),
+                            spacing="3",
+                        ),
+                        height="60vh",
+                        width="100%",
+                    ),
+
+                    # 🔹 ERROR
+                    rx.center(
+                        rx.vstack(
+                            rx.heading("Artículo no encontrado", size="6"),
+                            rx.link(
+                                rx.button("Regresar a Artículos", color_scheme="blue"),
+                                href="/articulos",
+                            ),
+                            spacing="4",
+                        ),
+                        width="100%",
+                        height="60vh",
+                    ),
+                ),
             ),
         ),
+
         show_sidebar=False,
         content_padding=False,
         background="var(--gray-1)",
-    )
+    ) 

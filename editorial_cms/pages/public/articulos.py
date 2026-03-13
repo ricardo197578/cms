@@ -105,6 +105,7 @@ def articulos():
                                             rx.link(
                                                 "Leer más →",
                                                 href="/articulo/" + post.slug,
+                                                on_click=PublicState.iniciar_carga_post,
                                                 font_size=rx.breakpoints(initial="sm", md="md"),
                                                 color="var(--accent-11)",
                                                 _hover={"color": "var(--accent-12)"},
@@ -143,8 +144,8 @@ def articulos():
                         align="start",
                         width="100%",
                     ),
-                    # Responsivo: 100% en móvil, 70% en escritorio
-                    width=["100%", "100%", "70%"],
+                    # Responsivo: 100% en móvil, 68% en desktop
+                    width=rx.breakpoints(initial="100%", md="68%"),
                     padding_bottom=rx.breakpoints(initial="1.5em", md="2em", lg="0px"),
                     padding_x=rx.breakpoints(initial="1em", md="0"),
                     spacing=rx.breakpoints(initial="3", md="4"),
@@ -164,6 +165,7 @@ def articulos():
                             lambda post: rx.link(
                                 post.titulo,
                                 href="/articulo/" + post.slug,
+                                on_click=PublicState.iniciar_carga_post,
                                 font_size=rx.breakpoints(initial="sm", md="md"),
                                 color="var(--accent-11)",
                                 _hover={"color": "var(--accent-12)", "text_decoration": "underline"},
@@ -211,12 +213,13 @@ def articulos():
                         spacing="3",
                         align="start",
                     ),
-                    # Responsivo: 100% en móvil, 30% en escritorio
-                    width=rx.breakpoints(initial="100%", md="100%", lg="30%"),
-                    padding_left=rx.breakpoints(initial="1em", md="0", lg="2em"),
+                    # Responsivo: 100% en móvil, 32% en desktop
+                    width=rx.breakpoints(initial="100%", md="32%"),
+                    padding_left=rx.breakpoints(initial="1em", md="1.2em", lg="2em"),
                     spacing=rx.breakpoints(initial="2", md="3"),
                 ),
-                wrap="wrap",
+                direction=rx.breakpoints(initial="column", md="row"),
+                align="start",
                 width="100%",
                 gap=rx.breakpoints(initial="1em", md="2em"),
             ),
