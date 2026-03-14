@@ -1,11 +1,9 @@
 import reflex as rx
 from editorial_cms.components.admin_layout import AdminLayout
+from editorial_cms.components.grilla_articulos import grilla_articulos
 from editorial_cms.components.layout_theme import (
     ancho_contenido_publico,
-    borde_tarjeta_publica,
     fondo_publico,
-    radio_tarjeta_publica,
-    sombra_tarjeta_publica,
 )
 from editorial_cms.states.public_state import PublicState
 from editorial_cms.states.site_config_state import SiteConfigState
@@ -38,25 +36,10 @@ def categoria():
             ),
 
             # 🔹 Listado de posts
-            rx.foreach(
+            rx.cond(
                 PublicState.posts_categoria,
-                lambda post: rx.box(
-                    rx.vstack(
-                        rx.heading(post.titulo, size="4"),
-                        rx.text(post.contenido[:120] + "..."),
-                        rx.link(
-                            "Leer más",
-                            href=f"/articulo/{post.slug}",
-                        ),
-                        spacing="2",
-                        align="start",
-                    ),
-                    padding="1em",
-                    border=borde_tarjeta_publica(),
-                    border_radius=radio_tarjeta_publica(),
-                    box_shadow=sombra_tarjeta_publica(),
-                    width="100%",
-                )
+                grilla_articulos(PublicState.posts_categoria),
+                rx.heading("No hay artículos en esta categoría"),
             ),
 
             

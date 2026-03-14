@@ -1,11 +1,11 @@
 import reflex as rx
 from editorial_cms.components.admin_layout import AdminLayout
+from editorial_cms.components.grilla_articulos import grilla_articulos
 from editorial_cms.components.layout_theme import (
     ancho_contenido_publico,
     borde_tarjeta_publica,
     fondo_publico,
     radio_tarjeta_publica,
-    sombra_tarjeta_publica,
 )
 from editorial_cms.states.public_state import PublicState
 from editorial_cms.states.site_config_state import SiteConfigState
@@ -80,69 +80,7 @@ def articulos():
                         rx.cond(
                             PublicState.posts,
                             rx.vstack(
-                                rx.foreach(
-                                    PublicState.posts,
-                                    lambda post: rx.box(
-                                        rx.vstack(
-                                            rx.cond(
-                                                post.imagen_destacada,
-                                                rx.image(
-                                                    src=rx.get_upload_url(post.imagen_destacada),
-                                                    width="100%",
-                                                    height="100%",
-
-                                                    object_fit="contain",  # muestra imagen completa
-
-                                                    background_color="rgba(0,0,0,0.04)",
-
-                                                    border_radius="10px",
-                                                    
-                                                     #width="100%",
-                                                     #height=rx.breakpoints(initial="160px", md="220px"),
-                                                     #object_fit="cover",
-                                                     #border_radius="8px",
-                                                ),
-
-                                                
-                                            ),
-                                            rx.heading(
-                                                post.titulo,
-                                                size=rx.breakpoints(initial="3", md="4"),
-                                                color="var(--gray-12)",
-                                            ),
-                                            rx.text(
-                                                post["fecha_publicacion"],
-                                                font_size=rx.breakpoints(initial="xs", md="sm"),
-                                                color="var(--gray-10)",
-                                            ),
-                                            rx.text(
-                                                post.contenido[:120] + "...",
-                                                font_size=rx.breakpoints(initial="sm", md="md"),
-                                                color="var(--gray-11)",
-                                            ),
-                                            rx.link(
-                                                "Leer más →",
-                                                href="/articulo/" + post.slug,
-                                                on_click=PublicState.iniciar_carga_post,
-                                                font_size=rx.breakpoints(initial="sm", md="md"),
-                                                color="var(--accent-11)",
-                                                _hover={"color": "var(--accent-12)"},
-                                            ),
-                                            spacing=rx.breakpoints(initial="2", md="2"),
-                                            align="start",
-                                        ),
-                                        padding=rx.breakpoints(initial="1.2em", md="1.5em"),
-                                        border=borde_tarjeta_publica(),
-                                        border_radius=radio_tarjeta_publica(),
-                                        width="100%",
-                                        box_shadow=sombra_tarjeta_publica(),
-                                        _hover={
-                                            "box_shadow": "0 14px 30px rgba(0, 0, 0, 0.18)",
-                                            "transform": "translateY(-2px)",
-                                        },
-                                        transition="all 0.2s ease-in-out",
-                                    ),
-                                ),
+                                grilla_articulos(PublicState.posts),
 
                                 rx.hstack(
                                     rx.button(

@@ -1,5 +1,5 @@
 import reflex as rx
-from typing import Optional, List, Dict, Any
+from typing import Optional, List
 from editorial_cms.models.post import Post
 from editorial_cms.models.categoria_sidebar import CategoriaSidebar
 from editorial_cms.services.post_service import obtener_recientes
@@ -16,8 +16,6 @@ from editorial_cms.services.category_service import (
     obtener_categoria_por_slug,
     obtener_categorias_con_contador,
 )
-
-from editorial_cms.services.post_service import buscar_posts_por_titulo
 
 from editorial_cms.services.post_service import buscar_posts
 from editorial_cms.services.post_service import contar_posts
@@ -47,7 +45,7 @@ class PublicState(rx.State):
     categorias_sidebar: List[CategoriaSidebar] = []
 
     # 🔹 FILTRADO POR CATEGORÍA
-    posts_categoria: List[Post] = []
+    posts_categoria: List[PostPublic] = []
     nombre_categoria_actual: str = ""
 
     recientes: List[Post] = []
@@ -126,7 +124,7 @@ class PublicState(rx.State):
     # CARGAS
     # =========================
     async def cargar_recientes(self):
-        self.recientes = obtener_recientes()
+        self.recientes = list(obtener_recientes())
 
     async def cargar_publicados(self):
         posts_db = obtener_publicados()
@@ -187,7 +185,18 @@ class PublicState(rx.State):
 
         if categoria:
             self.nombre_categoria_actual = categoria.nombre
-            self.posts_categoria = obtener_posts_por_categoria_slug(slug)
+            posts_db = obtener_posts_por_categoria_slug(slug)
+            self.posts_categoria = [
+                PostPublic(
+                    id=post.id,
+                    titulo=post.titulo,
+                    slug=post.slug,
+                    contenido=post.contenido,
+                    fecha_publicacion=post.fecha_publicacion.strftime("%d/%m/%Y"),
+                    imagen_destacada=post.imagen_destacada,
+                )
+                for post in posts_db
+            ]
         else:
             self.posts_categoria = []
             self.nombre_categoria_actual = ""
@@ -278,7 +287,7 @@ class PublicState(rx.State):
         # PAGE
         try:
             self.page = int(query_dict.get("page", ["1"])[0])
-        except:
+        except (TypeError, ValueError):
             self.page = 1
 
         # BUSQUEDA

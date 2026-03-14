@@ -1,5 +1,4 @@
 import reflex as rx
-
 from editorial_cms.states.site_config_state import SiteConfigState
 
 
@@ -71,5 +70,45 @@ def radio_tarjeta_publica() -> rx.Var:
             SiteConfigState.layout_publico == "revista",
             "14px",
             "10px",
+        ),
+    )
+
+
+def color_primario_publico() -> rx.Var:
+    return rx.cond(
+        SiteConfigState.layout_publico == "revista",
+        "#8b6f3d",
+        rx.cond(
+            SiteConfigState.layout_publico == "portal",
+            "#2563eb",
+            rx.cond(
+                SiteConfigState.layout_publico == "blog",
+                "#6b5e4b",
+                "#444",
+            ),
+        ),
+    )
+
+
+def padding_layout_publico() -> rx.Var:
+    return rx.cond(
+        SiteConfigState.layout_publico == "portal",
+        "32px",
+        rx.cond(
+            SiteConfigState.layout_publico == "revista",
+            "36px",
+            "28px",
+        ),
+    )
+
+
+def fuente_layout_publico() -> rx.Var:
+    return rx.cond(
+        SiteConfigState.layout_publico == "revista",
+        "Georgia, serif",
+        rx.cond(
+            SiteConfigState.layout_publico == "portal",
+            "Inter, sans-serif",
+            "system-ui, sans-serif",
         ),
     )

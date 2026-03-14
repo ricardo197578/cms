@@ -2,7 +2,7 @@ from pydantic import BaseModel
 
 
 class PostPublic(BaseModel):
-    id: int
+    id: int | None = None
     titulo: str
     slug: str
     contenido: str
