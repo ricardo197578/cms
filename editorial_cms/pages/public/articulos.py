@@ -82,10 +82,21 @@ def articulos():
                                                 rx.image(
                                                     src=rx.get_upload_url(post.imagen_destacada),
                                                     width="100%",
-                                                    height=rx.breakpoints(initial="160px", md="220px"),
-                                                    object_fit="cover",
-                                                    border_radius="8px",
+                                                    height="100%",
+
+                                                    object_fit="contain",  # muestra imagen completa
+
+                                                    background_color="rgba(0,0,0,0.04)",
+
+                                                    border_radius="10px",
+                                                    
+                                                     #width="100%",
+                                                     #height=rx.breakpoints(initial="160px", md="220px"),
+                                                     #object_fit="cover",
+                                                     #border_radius="8px",
                                                 ),
+
+                                                
                                             ),
                                             rx.heading(
                                                 post.titulo,

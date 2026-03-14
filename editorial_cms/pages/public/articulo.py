@@ -139,11 +139,26 @@ def articulo():
 
                         rx.cond(
                             PublicState.post_actual.imagen_destacada,
-                            rx.image(
-                                src=rx.get_upload_url(PublicState.post_actual.imagen_destacada),
+
+                            rx.box(
+
+                                rx.image(
+                                    src=rx.get_upload_url(PublicState.post_actual.imagen_destacada),
+
+                                    width="100%",
+                                    height="100%",
+
+                                    object_fit="contain",  # muestra imagen completa
+
+                                    background_color="rgba(0,0,0,0.04)",
+
+                                    border_radius="10px",
+                                ),
+
                                 width="100%",
-                                max_height=rx.breakpoints(initial="260px", md="420px"),
-                                object_fit="cover",
+                                aspect_ratio="16/9",   # mantiene proporción
+                                overflow="hidden",
+
                                 border_radius="10px",
                             ),
                         ),

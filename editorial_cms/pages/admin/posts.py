@@ -129,13 +129,14 @@ def posts():
                                 rx.box(
                                     rx.image(
                                         src=rx.get_upload_url(PostState.imagen_destacada),
-
                                         width="100%",
                                         height="100%",
-
-                                        object_fit="cover",   # adapta imagen
+                                        object_fit="contain", # Muestra la foto entera sin recortar
+                                        background_color="rgba(0,0,0,0.05)", # Opcional: un fondo suave para los huecos
                                         border_radius="8px",
                                     ),
+
+
 
                                     width="100%",
                                     height="220px",          # altura fija contenedor
