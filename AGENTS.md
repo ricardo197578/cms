@@ -1,17 +1,16 @@
 # AGENTS.md - Editorial CMS
-
-Operating guide for coding agents working in this repository.
+Operational guide for agentic coding assistants working in this repository.
 
 ## Project Snapshot
 - Stack: Python 3.x, Reflex `0.8.27`, SQLModel, PostgreSQL, `python-dotenv`, bcrypt.
 - Main package: `editorial_cms/`.
-- Architecture: models -> services -> states -> pages/components.
-- Domain language is mostly Spanish (`Usuario`, `categoria`, `rol`, `titulo`).
-- `DATABASE_URL` is loaded from `.env` in `editorial_cms/database.py`.
-- `init_db()` is called on startup in `editorial_cms/editorial_cms.py`.
+- Runtime entrypoint: `editorial_cms/editorial_cms.py` (calls `init_db()` at startup).
+- Data access: SQLModel sessions from `editorial_cms/database.py` using `DATABASE_URL`.
+- Architecture flow: `models -> services -> states -> pages/components`.
+- Domain language is Spanish (`Usuario`, `Category`, `rol`, `titulo`, `categoria_id`, etc.).
 
 ## Environment Setup
-Use local `venv` when available.
+Use the local virtual environment when available.
 
 ```bash
 # Windows PowerShell
@@ -23,33 +22,28 @@ venv\Scripts\activate.bat
 # macOS/Linux
 source venv/bin/activate
 
-# Install dependencies
+# Install runtime dependencies
 pip install -r requirements.txt
 ```
 
 ## Build, Lint, and Test Commands
 ```bash
-# Run app (dev)
+# Run app in dev mode
 reflex run
-
-# Run app on custom port
-reflex run --port 3000
 
 # Build/deploy bundle
 reflex deploy
 
-# Lint (ruff is not pinned in requirements)
-pip install ruff
+# Install lint/test tools if missing
+pip install ruff pytest pytest-asyncio
+
+# Lint
 ruff check .
+
+# Lint with auto-fixes
 ruff check --fix .
 
-# Optional formatting
-ruff format .
-
-# Install test tooling
-pip install pytest pytest-asyncio
-
-# Run full test suite
+# Run all tests
 pytest
 
 # Run a single test file
@@ -58,104 +52,98 @@ pytest tests/test_post_service.py
 # Run a single test function (preferred single-test pattern)
 pytest tests/test_post_service.py::test_crear_post
 
-# Run tests by keyword
+# Run tests by keyword expression
 pytest -k "post and crear"
 
-# Stop on first failure
+# Stop at first failure
 pytest -x
 ```
 
 Notes:
-- A `tests/` directory may not exist yet; create it for new tests.
-- If no tests are collected, run lint and verify app boot (`reflex run`).
-
-## Database and Migrations
-- No `alembic.ini` or migration folder is currently present.
-- If migrations are introduced, use:
-
-```bash
-alembic upgrade head
-alembic revision --autogenerate -m "descripcion"
-```
+- If `tests/` does not exist, create it and mirror package structure.
+- If no tests are collected, run `ruff check .` and validate app boot with `reflex run`.
 
 ## Code Style Guidelines
 
 ### Naming and Language
-- Keep domain/business names in Spanish unless extending an existing English API.
-- Modules/files: `snake_case`.
-- Classes: `PascalCase`.
-- Functions/methods/variables: `snake_case`.
-- State classes end with `State`.
-- Service functions follow CRUD verbs: `crear_*`, `obtener_*`, `actualizar_*`, `eliminar_*`.
+- Keep business/domain names in Spanish unless extending an existing English API.
+- Files/modules/functions/variables: `snake_case`.
+- Classes: `PascalCase`; Reflex state classes must end in `State`.
+- Service APIs should use CRUD-style Spanish verbs: `crear_*`, `obtener_*`, `actualizar_*`, `eliminar_*`.
+- Prefer descriptive identifiers (`categoria_slug`, `imagen_destacada`, `user_role`) over abbreviations.
 
 ### Imports
 - Prefer absolute imports from `editorial_cms.*`.
-- Group imports: stdlib, third-party, local; keep one blank line between groups.
-- Use `TYPE_CHECKING` imports for model circular references where needed.
+- Order imports by groups: stdlib, third-party, local.
+- Keep imports at module top; avoid repeated imports inside functions unless needed for cycles.
+- Remove unused imports while editing touched files.
 
-### Formatting
-- Follow PEP 8 and keep functions small and cohesive.
-- Prefer focused service helpers over large multi-purpose functions.
-- Extract reusable logic (slug generation, auth checks, filtering) into service/helpers.
+### Formatting and Organization
+- Follow PEP 8; keep functions focused and cohesive.
+- Favor small helper functions (slugging, filtering, auth checks) over monolithic logic.
+- Avoid broad refactors when a targeted change is sufficient.
 
 ### Types
-- Add type hints to public function parameters and return values.
+- Add type hints to public function signatures and state fields.
 - Use `T | None` (or `Optional[T]`) consistently for nullable values.
-- Type SQLModel fields explicitly (including nullable foreign keys).
-- Type Reflex state fields (`str`, `int`, `list[Post]`, etc.).
+- Type SQLModel fields explicitly, including optional foreign keys.
+- Prefer concrete containers in new code (`list[Post]`, `dict[str, str]`) over untyped collections.
 
-### SQLModel and Data Access
-- Use `with Session(engine) as session:` for every DB operation.
-- Use `select(...)` + `session.exec(...)`; avoid raw SQL.
-- Call `session.commit()` after mutations.
-- Call `session.refresh(obj)` when returning newly created rows.
-- Keep slug uniqueness with suffix collisions (`slug`, `slug-1`, `slug-2`).
+## SQLModel and Persistence
+- Always use `with Session(engine) as session:` for DB work.
+- Prefer `select(...)` + `session.exec(...)`; avoid raw SQL.
+- Call `session.commit()` after create/update/delete mutations.
+- Call `session.refresh(obj)` when returning newly created/updated rows that need DB-generated fields.
+- Keep slug generation deterministic and collision-safe (`slug`, `slug-1`, `slug-2`).
 
-### Reflex State and Pages
+## Reflex State, Pages, and Components
 - Prefer `async def` for state event handlers.
 - Use `await self.get_state(OtherState)` for cross-state access.
-- Guard protected actions with auth/role checks before mutation.
-- Reset form fields after successful create/update flows.
+- Enforce auth/role checks before protected mutations.
+- Reset form fields after successful writes to avoid stale UI state.
 - Use `@rx.var` for computed reactive properties.
-- Prefer `rx.foreach` and `rx.cond` for list/conditional UI rendering.
+- Prefer `rx.foreach` and `rx.cond` for list and conditional rendering.
+- Component functions should return `rx.Component` and stay composable.
+- Keep shared wrappers/layout primitives under `editorial_cms/components/`.
 
-### Components
-- Component functions should return `rx.Component`.
-- Keep components composable; avoid monolithic page-sized functions.
-- Shared wrappers/layouts belong in `editorial_cms/components/`.
-
-### Error Handling and Security
-- Never expose raw stack traces or exceptions to end users.
-- Catch expected DB errors (integrity, uniqueness, FK) and return clear messages.
-- In states, fail safely by setting error state or returning early.
-- Log unexpected exceptions with actionable context.
-- Use password helpers from `editorial_cms/core/security.py`.
+## Error Handling and Security
+- Do not expose raw tracebacks to end users.
+- Catch expected data errors (validation, uniqueness, FK integrity) and return actionable messages.
+- In state handlers, fail safely (early return + set error state/message where appropriate).
+- Log unexpected exceptions with enough context to debug.
+- Use password helpers in `editorial_cms/core/security.py` (`hash_password`, `verify_password`).
 - Never store plaintext passwords.
-- Enforce role checks in state methods, page guards, and UI visibility.
+- Apply role checks in state methods, page guards, and UI visibility.
 
 ## Testing Guidance
-- Add tests under `tests/` mirroring the package layout.
-- Prioritize service-layer CRUD/auth tests first.
-- Add regression tests when fixing bugs.
+- Put tests under `tests/` with paths mirroring `editorial_cms/`.
+- Prioritize service-layer CRUD/auth tests first, then state-level regressions.
 - Use `pytest-asyncio` for async state logic.
-- Minimum PR verification for code changes: lint + targeted tests.
+- Add regression tests when fixing bugs.
+- Minimum verification for changes: lint + targeted tests for touched behavior.
+
+## Database and Migrations
+- Current repository does not include configured Alembic migration files.
+- If migrations are introduced, use `alembic upgrade head` and `alembic revision --autogenerate -m "descripcion"`.
 
 ## Agent Workflow Expectations
-- Inspect nearby files before editing to match local patterns.
-- Prefer minimal, targeted edits over broad refactors.
-- Do not rename Spanish domain entities to English without strong reason.
-- When changing DB behavior, verify service plus state/page integration.
-- If adding tools/dependencies, update this file with commands.
+- Inspect related files before editing to match local conventions.
+- Prefer minimal, scoped edits over speculative rewrites.
+- Do not rename Spanish domain entities to English without explicit reason.
+- If changing DB behavior, verify service + state + page integration paths.
+- If adding new tooling/dependencies, update this document with exact commands.
 
 ## Cursor and Copilot Rules
 Checked sources in this repository:
-- `.cursor/rules/` -> not present
-- `.cursorrules` -> not present
-- `.github/copilot-instructions.md` -> not present
-- `copilot-instructions.md` -> present and should be followed as supplemental guidance
+- `.cursor/rules/`: not present
+- `.cursorrules`: not present
+- `.github/copilot-instructions.md`: not present
+- `copilot-instructions.md`: present
 
-Conflict priority:
-1. Explicit user request
-2. `AGENTS.md`
-3. `copilot-instructions.md`
-4. Existing local code conventions in touched files
+How to apply them:
+- Treat `copilot-instructions.md` as supplemental guidance for architecture and naming.
+- If guidance conflicts, follow this priority order:
+  1. Explicit user request
+  2. `AGENTS.md`
+  3. `copilot-instructions.md`
+  4. Existing local conventions in touched files

@@ -1,12 +1,14 @@
 import reflex as rx
 from editorial_cms.components.admin_layout import AdminLayout
+from editorial_cms.components.layout_theme import fondo_publico
 from editorial_cms.states.public_state import PublicState
+from editorial_cms.states.site_config_state import SiteConfigState
 from editorial_cms.components.container import content_container
 
 
 @rx.page(
     route="/articulo/[slug]",
-    on_load=PublicState.cargar_por_slug,
+    on_load=[SiteConfigState.cargar_config, PublicState.cargar_por_slug],
 )
 def articulo():
 
@@ -214,5 +216,5 @@ def articulo():
 
         show_sidebar=False,
         content_padding=False,
-        background="var(--gray-1)",
+        background=fondo_publico(),
     ) 

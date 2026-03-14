@@ -4,6 +4,7 @@ from editorial_cms.services.site_config_service import obtener_config, guardar_c
 
 
 class SiteConfigState(rx.State):  # Define una clase de estado que hereda de rx.State
+    LAYOUTS_DISPONIBLES: tuple[str, ...] = ("minimalista", "blog", "revista", "portal")
 
     # 🔹 CONFIGURACIÓN GENERAL  # Comentario: sección de configuración básica del sitio
     site_name: str = "Editorial CMS"  # Nombre del sitio con valor por defecto
@@ -26,6 +27,9 @@ class SiteConfigState(rx.State):  # Define una clase de estado que hereda de rx.
     twitter_url: str = ""  # URL de Twitter/X
     youtube_url: str = ""  # URL de YouTube
     linkedin_url: str = ""  # URL de LinkedIn
+
+    # 🔹 LAYOUT PÚBLICO
+    layout_publico: str = "minimalista"
 
     # 🔹 MENSAJES UI  # Comentario: mensajes para mostrar al usuario en la interfaz
     mensaje: str = ""  # Mensaje de confirmación o error (vacío por defecto)
@@ -56,6 +60,7 @@ class SiteConfigState(rx.State):  # Define una clase de estado que hereda de rx.
         self.twitter_url = config.twitter_url  # Actualiza URL de Twitter
         self.youtube_url = config.youtube_url  # Actualiza URL de YouTube
         self.linkedin_url = config.linkedin_url  # Actualiza URL de LinkedIn
+        self.layout_publico = config.layout_publico or "minimalista"
 
 
 
@@ -78,6 +83,7 @@ class SiteConfigState(rx.State):  # Define una clase de estado que hereda de rx.
             "twitter_url": self.twitter_url,  # URL Twitter actual
             "youtube_url": self.youtube_url,  # URL YouTube actual
             "linkedin_url": self.linkedin_url,  # URL LinkedIn actual
+            "layout_publico": self.layout_publico,
         }
 
         guardar_config(data)  # Llama al servicio para guardar el diccionario en la base de datos
@@ -89,3 +95,7 @@ class SiteConfigState(rx.State):  # Define una clase de estado que hereda de rx.
     # 🔹 limpiar mensaje  # Comentario: función para limpiar el mensaje de la interfaz
     def limpiar_mensaje(self):  # Método para borrar el mensaje mostrado
         self.mensaje = ""  # Asigna cadena vacía al mensaje
+
+    def set_layout_publico(self, value: str):
+        if value in self.LAYOUTS_DISPONIBLES:
+            self.layout_publico = value

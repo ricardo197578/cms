@@ -41,5 +41,6 @@ def guardar_config(data):
             config.twitter_url = data["twitter_url"]
             config.youtube_url = data["youtube_url"]
             config.linkedin_url = data["linkedin_url"]
+            config.layout_publico = data["layout_publico"]
 
         session.commit()

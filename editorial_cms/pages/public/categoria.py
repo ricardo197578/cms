@@ -1,11 +1,19 @@
 import reflex as rx
 from editorial_cms.components.admin_layout import AdminLayout
+from editorial_cms.components.layout_theme import (
+    ancho_contenido_publico,
+    borde_tarjeta_publica,
+    fondo_publico,
+    radio_tarjeta_publica,
+    sombra_tarjeta_publica,
+)
 from editorial_cms.states.public_state import PublicState
+from editorial_cms.states.site_config_state import SiteConfigState
 
 
 @rx.page(
     route="/categoria/[slug]",
-    on_load=PublicState.cargar_posts_por_categoria_slug,
+    on_load=[SiteConfigState.cargar_config, PublicState.cargar_posts_por_categoria_slug],
 )
 def categoria():
 
@@ -44,8 +52,9 @@ def categoria():
                         align="start",
                     ),
                     padding="1em",
-                    border="1px solid #eee",
-                    border_radius="8px",
+                    border=borde_tarjeta_publica(),
+                    border_radius=radio_tarjeta_publica(),
+                    box_shadow=sombra_tarjeta_publica(),
                     width="100%",
                 )
             ),
@@ -57,8 +66,9 @@ def categoria():
                 width="100%",
             ),
             padding="2em",
+            max_width=ancho_contenido_publico(),
         ),
         show_sidebar=False,
         content_padding=False,
-        background="var(--gray-1)",
+        background=fondo_publico(),
     )

@@ -1,8 +1,8 @@
 import reflex as rx  # Importa la librería principal de Reflex
 from editorial_cms.components.admin_layout import AdminLayout
 from editorial_cms.states.site_config_state import SiteConfigState  # Importa el estado que maneja la configuración del sitio
-from editorial_cms.components.banner import banner  # Importa el componente banner (aunque no se usa en esta página)
 from editorial_cms.components.footer import footer  # Importa el componente footer para el pie de página
+from editorial_cms.components.layout_theme import fondo_publico
 
 @rx.page(  # Decorador que define una página en Reflex
     route="/",  # Define la ruta principal del sitio (página de inicio)
@@ -32,34 +32,91 @@ def index():  # Función que define el contenido de la página principal
                     align="center",  # Alinea los elementos al centro verticalmente
                 ),
                 width="100%",  # Ancho completo del contenedor center
-                border_bottom="1px solid #e5e7eb",  # Borde inferior delgado y gris
+                border_bottom=rx.cond(
+                    SiteConfigState.layout_publico == "revista",
+                    "1px solid #dccfb6",
+                    "1px solid #e5e7eb",
+                ),
             ),
 
             # HERO  # Comentario: sección principal o hero
             rx.center(  # Centra el contenido horizontalmente
-                rx.vstack(  # Organiza los elementos verticalmente
-                    rx.heading(  # Título principal
-                        SiteConfigState.hero_title,  # Título obtenido del estado
-                        size="8",  # Tamaño grande para el título
-                        text_align="center",  # Texto centrado
-                    ),
-                    rx.text(  # Subtítulo
-                        SiteConfigState.hero_subtitle,  # Subtítulo obtenido del estado
-                        size="4",  # Tamaño fijo compatible
-                        color="gray",  # Color de texto gris
-                        text_align="center"  # Texto centrado
-                    ),
-                    rx.link(  # Enlace para el botón
-                        rx.button(  # Botón
-                            SiteConfigState.hero_button_text,  # Texto del botón obtenido del estado
-                            color_scheme="blue",  # Esquema de color azul
-                            size="3"  # Tamaño del botón
+                rx.box(
+                    rx.vstack(  # Organiza los elementos verticalmente
+                        rx.heading(  # Título principal
+                            SiteConfigState.hero_title,  # Título obtenido del estado
+                            size=rx.cond(
+                                SiteConfigState.layout_publico == "portal",
+                                "7",
+                                "8",
+                            ),
+                            text_align="center",  # Texto centrado
                         ),
-                        href="/articulos"  # Enlace a la página de artículos
+                        rx.text(  # Subtítulo
+                            SiteConfigState.hero_subtitle,  # Subtítulo obtenido del estado
+                            size="4",  # Tamaño fijo compatible
+                            color="gray",  # Color de texto gris
+                            text_align="center"  # Texto centrado
+                        ),
+                        rx.link(  # Enlace para el botón
+                            rx.button(  # Botón
+                                SiteConfigState.hero_button_text,  # Texto del botón obtenido del estado
+                                color_scheme=rx.cond(
+                                    SiteConfigState.layout_publico == "revista",
+                                    "amber",
+                                    rx.cond(
+                                        SiteConfigState.layout_publico == "portal",
+                                        "indigo",
+                                        "blue",
+                                    ),
+                                ),
+                                size="3"  # Tamaño del botón
+                            ),
+                            href="/articulos"  # Enlace a la página de artículos
+                        ),
+                        spacing="6",  # Espacio entre elementos del vstack
+                        align="center",  # Alinea los elementos al centro
+                        width="100%",  # Ancho completo
                     ),
-                    spacing="6",  # Espacio entre elementos del vstack
-                    align="center",  # Alinea los elementos al centro
-                    width="100%",  # Ancho completo
+                    width="100%",
+                    max_width="920px",
+                    padding=rx.cond(
+                        SiteConfigState.layout_publico == "minimalista",
+                        "0",
+                        rx.cond(
+                            SiteConfigState.layout_publico == "portal",
+                            "1.8em",
+                            "2.4em",
+                        ),
+                    ),
+                    background=rx.cond(
+                        SiteConfigState.layout_publico == "minimalista",
+                        "transparent",
+                        rx.cond(
+                            SiteConfigState.layout_publico == "blog",
+                            "#ffffff",
+                            rx.cond(
+                                SiteConfigState.layout_publico == "revista",
+                                "#fffaf0",
+                                "#eef4ff",
+                            ),
+                        ),
+                    ),
+                    border=rx.cond(
+                        SiteConfigState.layout_publico == "minimalista",
+                        "none",
+                        "1px solid var(--gray-5)",
+                    ),
+                    border_radius=rx.cond(
+                        SiteConfigState.layout_publico == "portal",
+                        "8px",
+                        "16px",
+                    ),
+                    box_shadow=rx.cond(
+                        SiteConfigState.layout_publico == "minimalista",
+                        "none",
+                        "0 12px 30px rgba(15, 23, 42, 0.08)",
+                    ),
                 ),
                 flex="1",  # El contenedor puede crecer para ocupar espacio disponible
                 width="100%",  # Ancho completo
@@ -81,5 +138,5 @@ def index():  # Función que define el contenido de la página principal
         ),
         show_sidebar=False,
         content_padding=False,
-        background="var(--gray-1)",
+        background=fondo_publico(),
     )

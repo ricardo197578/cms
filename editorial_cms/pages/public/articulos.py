@@ -1,5 +1,12 @@
 import reflex as rx
 from editorial_cms.components.admin_layout import AdminLayout
+from editorial_cms.components.layout_theme import (
+    ancho_contenido_publico,
+    borde_tarjeta_publica,
+    fondo_publico,
+    radio_tarjeta_publica,
+    sombra_tarjeta_publica,
+)
 from editorial_cms.states.public_state import PublicState
 from editorial_cms.states.site_config_state import SiteConfigState
 from editorial_cms.components.banner import banner
@@ -125,11 +132,14 @@ def articulos():
                                             align="start",
                                         ),
                                         padding=rx.breakpoints(initial="1.2em", md="1.5em"),
-                                        border="1px solid var(--gray-6)",
-                                        border_radius="8px",
+                                        border=borde_tarjeta_publica(),
+                                        border_radius=radio_tarjeta_publica(),
                                         width="100%",
-                                        box_shadow="0 1px 3px rgba(0, 0, 0, 0.1)",
-                                        _hover={"box_shadow": "0 4px 12px rgba(0, 0, 0, 0.15)", "transform": "translateY(-2px)"},
+                                        box_shadow=sombra_tarjeta_publica(),
+                                        _hover={
+                                            "box_shadow": "0 14px 30px rgba(0, 0, 0, 0.18)",
+                                            "transform": "translateY(-2px)",
+                                        },
                                         transition="all 0.2s ease-in-out",
                                     ),
                                 ),
@@ -235,10 +245,23 @@ def articulos():
                 gap=rx.breakpoints(initial="1em", md="2em"),
             ),
             padding=rx.breakpoints(initial="1.5em", md="2em"),
-            max_width="1100px",
-            background="var(--gray-1)",
-            border_radius="8px",
-            box_shadow="0 1px 3px rgba(0, 0, 0, 0.05)",
+            max_width=ancho_contenido_publico(),
+            background=rx.cond(
+                SiteConfigState.layout_publico == "minimalista",
+                "var(--gray-1)",
+                "#ffffff",
+            ),
+            border_radius=radio_tarjeta_publica(),
+            border=rx.cond(
+                SiteConfigState.layout_publico == "minimalista",
+                "none",
+                borde_tarjeta_publica(),
+            ),
+            box_shadow=rx.cond(
+                SiteConfigState.layout_publico == "minimalista",
+                "0 1px 3px rgba(0, 0, 0, 0.05)",
+                "0 18px 40px rgba(15, 23, 42, 0.06)",
+            ),
         ),
 
         # 🔹 FOOTER DEL SITIO
@@ -250,5 +273,5 @@ def articulos():
         ),
         show_sidebar=False,
         content_padding=False,
-        background="var(--gray-1)",
+        background=fondo_publico(),
     )

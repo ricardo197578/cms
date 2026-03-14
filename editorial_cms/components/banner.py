@@ -33,7 +33,19 @@ def banner():
             )
         ),
 
-        background="linear-gradient(90deg,#2563eb,#1e40af)",
+        background=rx.cond(
+            SiteConfigState.layout_publico == "minimalista",
+            "linear-gradient(90deg,#2563eb,#1e40af)",
+            rx.cond(
+                SiteConfigState.layout_publico == "blog",
+                "linear-gradient(90deg,#334155,#475569)",
+                rx.cond(
+                    SiteConfigState.layout_publico == "revista",
+                    "linear-gradient(90deg,#8a5a2b,#c58e4a)",
+                    "linear-gradient(90deg,#1d4ed8,#2563eb,#0ea5e9)",
+                ),
+            ),
+        ),
         color="white",
         padding=rx.breakpoints(initial="40px 20px", md="60px 40px"),
         width="100%"

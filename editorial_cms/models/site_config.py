@@ -20,3 +20,4 @@ class SiteConfig(SQLModel, table=True):
     twitter_url: str
     youtube_url: str
     linkedin_url: str
+    layout_publico: str = Field(default="minimalista")

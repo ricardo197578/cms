@@ -21,10 +21,34 @@ def footer():
                 spacing=rx.breakpoints(initial="2", md="3"),
             )
         ),
-        background_color="#111827",
+        background_color=rx.cond(
+            SiteConfigState.layout_publico == "minimalista",
+            "#111827",
+            rx.cond(
+                SiteConfigState.layout_publico == "blog",
+                "#292524",
+                rx.cond(
+                    SiteConfigState.layout_publico == "revista",
+                    "#3f2d1a",
+                    "#0f172a",
+                ),
+            ),
+        ),
         color="#ffffff",
         padding=rx.breakpoints(initial="30px 20px", md="40px"),
         width="100%",
-        border_top="4px solid #2563eb",
+        border_top=rx.cond(
+            SiteConfigState.layout_publico == "minimalista",
+            "4px solid #2563eb",
+            rx.cond(
+                SiteConfigState.layout_publico == "blog",
+                "4px solid #64748b",
+                rx.cond(
+                    SiteConfigState.layout_publico == "revista",
+                    "4px solid #c58e4a",
+                    "4px solid #0ea5e9",
+                ),
+            ),
+        ),
         text_align="center",
     )

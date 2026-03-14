@@ -1,10 +1,11 @@
 import reflex as rx
 from editorial_cms.states.auth_state import AuthState
+from editorial_cms.states.site_config_state import SiteConfigState
 from editorial_cms.components.admin_layout import AdminLayout
 
 @rx.page(
     route="/admin/dashboard",
-    on_load=[AuthState.check_auth]
+    on_load=[AuthState.check_auth, SiteConfigState.cargar_config]
 )
 def dashboard():
     # Estilizamos el contenido interno
@@ -94,6 +95,47 @@ def dashboard():
             ),
             width="100%",
             margin_top="6",
+            variant="surface",
+        ),
+
+        rx.card(
+            rx.vstack(
+                rx.hstack(
+                    rx.icon("layout-panel-top"),
+                    rx.heading("Layout público", size="4"),
+                    spacing="2",
+                    align="center",
+                ),
+                rx.text(
+                    "Elegí el estilo visual del sitio: minimalista, blog, revista o portal.",
+                    color_scheme="gray",
+                    size="2",
+                ),
+                rx.hstack(
+                    rx.select(
+                        ["minimalista", "blog", "revista", "portal"],
+                        value=SiteConfigState.layout_publico,
+                        on_change=SiteConfigState.set_layout_publico,
+                        width=rx.breakpoints(initial="100%", md="260px"),
+                    ),
+                    rx.button(
+                        "Guardar layout",
+                        color_scheme="blue",
+                        on_click=SiteConfigState.guardar,
+                    ),
+                    spacing="3",
+                    width="100%",
+                    flex_wrap="wrap",
+                ),
+                rx.cond(
+                    SiteConfigState.mensaje != "",
+                    rx.text(SiteConfigState.mensaje, color="green", weight="medium", size="2"),
+                ),
+                spacing="3",
+                align="start",
+            ),
+            width="100%",
+            margin_top="2",
             variant="surface",
         ),
         
