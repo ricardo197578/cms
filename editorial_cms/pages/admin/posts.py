@@ -96,6 +96,7 @@ def posts():
                 # 🖼️ SECCIÓN DE IMAGEN DESTACADA
                 rx.card(
                     rx.vstack(
+
                         rx.hstack(
                             rx.icon("image"),
                             rx.text("Imagen Destacada", weight="bold"),
@@ -113,18 +114,45 @@ def posts():
                             padding="1.5em",
                         ),
 
+                        # PREVISUALIZACIÓN
                         rx.cond(
                             PostState.imagen_destacada,
+
                             rx.vstack(
-                                rx.text("Imagen cargada:", size="2", color_scheme="gray"),
-                                rx.image(
-                                    src=rx.get_upload_url(PostState.imagen_destacada),
+
+                                rx.text(
+                                    "Imagen cargada:",
+                                    size="2",
+                                    color_scheme="gray"
+                                ),
+
+                                rx.box(
+                                    rx.image(
+                                        src=rx.get_upload_url(PostState.imagen_destacada),
+
+                                        width="100%",
+                                        height="100%",
+
+                                        object_fit="cover",   # adapta imagen
+                                        border_radius="8px",
+                                    ),
+
                                     width="100%",
-                                    max_height="200px",
-                                    object_fit="cover",
+                                    height="220px",          # altura fija contenedor
+                                    overflow="hidden",
                                     border_radius="8px",
                                 ),
+
+                                rx.button(
+                                    "Eliminar imagen",
+                                    icon="trash",
+                                    color_scheme="red",
+                                    variant="soft",
+                                    on_click=PostState.eliminar_imagen,
+                                ),
+
                                 width="100%",
+                                spacing="3",
                             ),
                         ),
 
@@ -140,39 +168,53 @@ def posts():
                     rx.cond(
                         PostState.editando_id,
 
-                        rx.alert_dialog.root(
-                            rx.alert_dialog.trigger(
-                                rx.button(
-                                    "Actualizar Artículo",
-                                    icon="refresh-cw",
-                                    color_scheme="blue",
-                                    width=rx.breakpoints(initial="100%", sm="auto"),
-                                )
-                            ),
-                            rx.alert_dialog.content(
-                                rx.alert_dialog.title("Confirmar actualización"),
-                                rx.text("¿Deseas guardar los cambios de este artículo?"),
-                                rx.hstack(
-                                    rx.alert_dialog.cancel(
-                                        rx.button(
-                                            "Cancelar",
-                                            variant="outline",
-                                            color_scheme="gray",
-                                        )
-                                    ),
-                                    rx.alert_dialog.action(
-                                        rx.button(
-                                            "Actualizar",
-                                            color_scheme="blue",
-                                            on_click=PostState.actualizar_post,
-                                        )
+                        rx.hstack(
+
+                            rx.alert_dialog.root(
+                                rx.alert_dialog.trigger(
+                                    rx.button(
+                                        "Actualizar Artículo",
+                                        icon="refresh-cw",
+                                        color_scheme="blue",
+                                        width=rx.breakpoints(initial="100%", sm="auto"),
+                                    )
+                                ),
+                                rx.alert_dialog.content(
+                                    rx.alert_dialog.title("Confirmar actualización"),
+                                    rx.text("¿Deseas guardar los cambios de este artículo?"),
+                                    rx.hstack(
+                                        rx.alert_dialog.cancel(
+                                            rx.button(
+                                                "Cancelar",
+                                                variant="outline",
+                                                color_scheme="gray",
+                                            )
+                                        ),
+                                        rx.alert_dialog.action(
+                                            rx.button(
+                                                "Actualizar",
+                                                color_scheme="blue",
+                                                on_click=PostState.actualizar_post,
+                                            )
+                                        ),
+                                        spacing="3",
+                                        justify="end",
+                                        width="100%",
                                     ),
                                     spacing="3",
-                                    justify="end",
-                                    width="100%",
                                 ),
-                                spacing="3",
                             ),
+
+                            # BOTÓN NUEVO PARA CANCELAR EDICIÓN
+                            rx.button(
+                                "Cancelar edición",
+                                icon="x",
+                                variant="soft",
+                                color_scheme="gray",
+                                on_click=PostState.cancelar_edicion,
+                                width=rx.breakpoints(initial="100%", sm="auto"),
+                            ),
+
                         ),
 
                         rx.alert_dialog.root(

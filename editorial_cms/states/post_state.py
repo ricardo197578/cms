@@ -221,6 +221,8 @@ class PostState(rx.State):
     def limpiar_busqueda(self):
         self.busqueda = ""
         self.page = 1
+    
+    
 
     @rx.var
     def posts_filtrados(self) -> List[Post]:
@@ -250,3 +252,13 @@ class PostState(rx.State):
         start = (self.page - 1) * self.posts_per_page
         end = start + self.posts_per_page
         return self.posts_filtrados[start:end]
+    
+    def eliminar_imagen(self):
+        self.imagen_destacada = ""
+
+    def cancelar_edicion(self):
+        self.editando_id = None
+        self.titulo = ""
+        self.contenido = ""
+        self.categoria_id = ""
+        self.imagen_destacada = ""
