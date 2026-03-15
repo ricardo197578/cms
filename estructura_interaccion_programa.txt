@@ -1,0 +1,209 @@
+GUIA DE ESTRUCTURA E INTERACCION - EDITORIAL CMS
+=================================================
+
+1) VISTA GENERAL DE ARQUITECTURA
+--------------------------------
+El proyecto sigue este flujo principal:
+
+    pages/components -> states -> services -> models -> database
+
+Explicacion rapida:
+- pages/components: lo que se renderiza en pantalla (UI Reflex).
+- states: estado reactivo y eventos (on_click, on_load, on_change).
+- services: logica de negocio y acceso a base de datos.
+- models: entidades SQLModel (tablas y estructuras de datos).
+- database: engine, sesiones e inicializacion de DB.
+
+
+2) ESTRUCTURA DEL PROGRAMA (RESUMIDA)
+-------------------------------------
+C:\Users\Usuario\Desktop\CMS
+|-- AGENTS.md
+|-- requirements.txt
+|-- rxconfig.py
+|-- editorial_cms/
+|   |-- __init__.py
+|   |-- editorial_cms.py                (entrypoint de la app)
+|   |-- database.py                     (conexion engine + init_db)
+|   |
+|   |-- core/
+|   |   |-- security.py                 (hash/verify password)
+|   |   `-- config_schema.py
+|   |
+|   |-- models/
+|   |   |-- usuario.py
+|   |   |-- post.py
+|   |   |-- category.py
+|   |   |-- site_config.py
+|   |   |-- post_public.py
+|   |   `-- categoria_sidebar.py
+|   |
+|   |-- services/
+|   |   |-- auth_service.py
+|   |   |-- usuario_service.py
+|   |   |-- post_service.py
+|   |   |-- category_service.py
+|   |   |-- site_config_service.py
+|   |   |-- create_admin.py
+|   |   `-- create_editor.py
+|   |
+|   |-- states/
+|   |   |-- auth_state.py
+|   |   |-- usuario_state.py
+|   |   |-- post_state.py
+|   |   |-- public_state.py
+|   |   |-- categoria_admin_state.py
+|   |   `-- site_config_state.py
+|   |
+|   |-- components/
+|   |   |-- admin_layout.py
+|   |   |-- admin_sidebar.py
+|   |   |-- admin_header.py
+|   |   |-- layout.py
+|   |   |-- layout_theme.py
+|   |   |-- banner.py
+|   |   |-- footer.py
+|   |   |-- container.py
+|   |   `-- grilla_articulos.py
+|   |
+|   `-- pages/
+|       |-- index.py
+|       |-- admin/
+|       |   |-- login.py
+|       |   |-- dashboard.py
+|       |   |-- configuracion.py
+|       |   |-- posts.py
+|       |   |-- usuarios.py
+|       |   `-- categorias.py
+|       `-- public/
+|           |-- articulos.py
+|           |-- articulo.py
+|           `-- categoria.py
+
+
+2.1 MAPA VISUAL (COMO FLUYE UNA ACCION)
+---------------------------------------
+
+                   [ Usuario en navegador ]
+                              |
+                              v
+                +---------------------------+
+                | pages/ y components/ UI  |
+                | (Reflex: botones, forms) |
+                +---------------------------+
+                              |
+                              | eventos (on_click/on_load/on_change)
+                              v
+                +---------------------------+
+                | states/ (AuthState,      |
+                | PublicState, SiteConfig) |
+                +---------------------------+
+                              |
+                              | llamadas de negocio
+                              v
+                +---------------------------+
+                | services/                |
+                | CRUD + reglas + Session  |
+                +---------------------------+
+                              |
+                              | SQLModel ORM
+                              v
+                +---------------------------+
+                | models/ (Post, Usuario,  |
+                | Category, SiteConfig)    |
+                +---------------------------+
+                              |
+                              | engine / Session
+                              v
+                +---------------------------+
+                | database.py + PostgreSQL |
+                +---------------------------+
+
+Direccion de retorno de datos:
+DB -> services -> states -> pages/components -> UI renderizada.
+
+
+3) COMO INTERACTUAN LOS ARCHIVOS ENTRE SI
+-----------------------------------------
+3.1 Inicio de aplicacion
+- editorial_cms/editorial_cms.py levanta la app Reflex.
+- En el arranque se ejecuta init_db() desde database.py.
+- database.py usa DATABASE_URL para crear engine SQLModel.
+
+3.2 Flujo de autenticacion admin
+- pages/admin/login.py muestra formulario.
+- Al hacer click en "Ingresar" dispara AuthState.login (states/auth_state.py).
+- AuthState usa auth_service.py para validar usuario/rol.
+- auth_service.py consulta models/usuario.py via Session(engine).
+
+3.3 Flujo de configuracion visual (layout theme)
+- pages/admin/dashboard.py muestra selector de layout.
+- Selector usa SiteConfigState.set_layout_publico.
+- Boton "Guardar layout" ejecuta SiteConfigState.guardar.
+- SiteConfigState.guardar llama site_config_service.guardar_config.
+- site_config_service guarda en models/site_config.py.
+- Luego, paginas publicas cargan config con SiteConfigState.cargar_config.
+
+3.4 Flujo de render en paginas publicas
+- pages/index.py, pages/public/articulos.py, pages/public/categoria.py,
+  pages/public/articulo.py usan AdminLayout(show_sidebar=False).
+- AdminLayout arma la estructura base (sin sidebar/header admin en publico).
+- banner.py, footer.py y layout_theme.py aplican colores/estilo por layout.
+- grilla_articulos.py define disposicion visual segun layout:
+  - blog/clasico -> lista vertical
+  - revista/escenario -> grid 3 columnas en desktop
+  - portal/boletin -> grid 2 columnas en desktop
+  - minimalista -> lista limpia
+
+3.5 Flujo de articulos y categorias
+- pages/public/articulos.py dispara eventos de PublicState (on_load y filtros).
+- PublicState (states/public_state.py) llama post_service.py y category_service.py.
+- post_service/category_service consultan models (post.py, category.py) con SQLModel.
+- El resultado vuelve al state y Reflex re-renderiza automaticamente la UI.
+
+3.6 Separacion de responsabilidades
+- components: solo presentacion/reutilizacion visual.
+- states: coordinacion de eventos + estado reactivo.
+- services: reglas de negocio y persistencia.
+- models: contrato de datos con DB.
+
+3.7 Verificacion de arquitectura (UI no toca DB directo)
+- Revisado en `pages/` y `states/`: no hay uso de `Session(engine)` ni consultas SQL directas.
+- El acceso a DB se concentra en `services/` (auth_service, post_service, category_service, etc.).
+- Conclusion: el flujo real si respeta la regla `UI -> state -> service -> model -> database`.
+
+
+4) EJEMPLO END-TO-END (CAMBIAR LAYOUT)
+--------------------------------------
+1. Admin abre /admin/dashboard.
+2. Elige "revista" en select.
+3. Click en "Guardar layout".
+4. SiteConfigState.guardar persiste en DB.
+5. Mensaje de exito aparece y se limpia automaticamente.
+6. Usuario abre /articulos.
+7. SiteConfigState.cargar_config trae layout guardado.
+8. layout_theme.py + grilla_articulos.py aplican tema/disposicion correspondiente.
+
+
+5) PUNTOS CLAVE PARA DESARROLLO FUTURO
+--------------------------------------
+- Si agregas un nuevo layout, actualizar como minimo:
+  1) states/site_config_state.py (LAYOUTS_DISPONIBLES)
+  2) pages/admin/dashboard.py (opcion del select)
+  3) components/layout_theme.py (tokens visuales)
+  4) components/banner.py y components/footer.py (si cambia identidad)
+  5) components/grilla_articulos.py (si cambia la disposicion)
+
+- Si agregas una nueva entidad de negocio:
+  1) models/nueva_entidad.py
+  2) services/nueva_entidad_service.py
+  3) states/nueva_entidad_state.py
+  4) pages/admin o pages/public correspondientes
+
+
+6) RESUMEN CORTO
+----------------
+La app esta organizada por capas bien definidas.
+La UI nunca deberia ir directo a DB.
+Siempre debe pasar por state -> service -> model.
+Con eso se mantiene orden, testeabilidad y escalabilidad.

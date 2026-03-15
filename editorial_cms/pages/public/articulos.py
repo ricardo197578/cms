@@ -43,18 +43,17 @@ def articulos():
                         ),
 
                         rx.hstack(
+                            
+                            # Componente de entrada de texto para búsqueda
                             rx.input(
-                                placeholder="Buscar por título...",
+                                placeholder="Buscar artículos...",
                                 value=PublicState.busqueda,
                                 on_change=PublicState.set_busqueda,
-                                debounce_timeout=400,
-                                width=rx.breakpoints(initial="100%", md="300px"),
-                                font_size=rx.breakpoints(initial="sm", md="md"),
-                                padding=rx.breakpoints(initial="8px", md="10px"),
-                                color="#f8fafc",
-                                background="#0b1220",
+                                width="100%",
+                                background="#f8fafc",
+                                color="#1e293b",                                
                                 border="1px solid #334155",
-                                _placeholder={"color": "#94a3b8"},
+                                _focus={"border_color": "#3b82f6", "box_shadow": "0 0 0 1px #3b82f6"},
                             ),
                             rx.cond(
                                 PublicState.mostrando_resultados,
