@@ -1,6 +1,5 @@
 import reflex as rx
 from editorial_cms.components.admin_layout import AdminLayout
-from editorial_cms.components.layout_theme import fondo_publico
 from editorial_cms.states.public_state import PublicState
 from editorial_cms.states.site_config_state import SiteConfigState
 from editorial_cms.components.container import content_container
@@ -21,7 +20,7 @@ def articulo():
             rx.center(
                 rx.vstack(
                     rx.spinner(size="3"),
-                    rx.text("Cargando artículo..."),
+                    rx.text("Cargando artículo...", color="#cbd5e1"),
                     spacing="3",
                 ),
                 height="60vh",
@@ -33,7 +32,7 @@ def articulo():
                 PublicState.post_corresponde_a_url,
 
                 content_container(
-
+                    rx.box(
                     rx.vstack(
 
                         # 🔹 BREADCRUMB
@@ -49,8 +48,8 @@ def articulo():
                                 ),
                                 href="/articulos",
                                 text_decoration="none",
-                                color="var(--accent-11)",
-                                _hover={"color": "var(--accent-12)", "opacity": "0.8"},
+                                color="#3b82f6",
+                                _hover={"color": "#60a5fa", "opacity": "0.8"},
                             ),
 
                             rx.spacer(),
@@ -59,23 +58,23 @@ def articulo():
                                 rx.link(
                                     "Inicio",
                                     href="/",
-                                    color="var(--gray-10)",
+                                    color="#93c5fd",
                                     underline="none",
                                     font_size=rx.breakpoints(initial="xs", md="sm"),
-                                    _hover={"color": "var(--gray-12)"},
+                                    _hover={"color": "#bfdbfe"},
                                 ),
 
-                                rx.text("/", color="var(--gray-9)"),
+                                rx.text("/", color="#64748b"),
 
                                 rx.cond(
                                     PublicState.post_actual.categoria,
                                     rx.link(
                                         PublicState.post_actual.categoria.nombre,
                                         href="/categoria/" + PublicState.post_actual.categoria.slug,
-                                        color="var(--accent-11)",
+                                        color="#93c5fd",
                                         underline="none",
                                         font_size=rx.breakpoints(initial="xs", md="sm"),
-                                        _hover={"color": "var(--accent-12)"},
+                                        _hover={"color": "#bfdbfe"},
                                     ),
                                 ),
 
@@ -86,7 +85,7 @@ def articulo():
                             width="100%",
                             align="center",
                             padding_bottom=rx.breakpoints(initial="1em", md="1.5em"),
-                            border_bottom="1px solid var(--gray-6)",
+                            border_bottom="1px solid #1e293b",
                             margin_bottom=rx.breakpoints(initial="1.5em", md="2em"),
                             flex_wrap="wrap",
                         ),
@@ -111,7 +110,7 @@ def articulo():
                                 PublicState.post_actual.titulo,
                                 size=rx.breakpoints(initial="5", md="8"),
                                 weight="bold",
-                                color="var(--gray-12)",
+                                color="#f8fafc",
                             ),
 
                             rx.hstack(
@@ -119,14 +118,14 @@ def articulo():
                                 rx.text(
                                     PublicState.post_actual.fecha_publicacion,
                                     size="2",
-                                    color="var(--gray-10)",
+                                    color="#94a3b8",
                                 ),
                                 rx.text("•"),
                                 rx.icon("clock", size=16),
                                 rx.text(
                                     "5 min de lectura",
                                     size="2",
-                                    color="var(--gray-10)",
+                                    color="#94a3b8",
                                 ),
                                 spacing="2",
                                 align="center",
@@ -152,7 +151,7 @@ def articulo():
 
                                     object_fit="contain",  # muestra imagen completa
 
-                                    background_color="rgba(0,0,0,0.04)",
+                                    background_color="#0b1220",
 
                                     border_radius="10px",
                                 ),
@@ -174,7 +173,7 @@ def articulo():
                             style={
                                 "font-size": "clamp(0.95rem, 2vw, 1.1rem)",
                                 "line-height": "1.9",
-                                "color": "var(--gray-12)",
+                                "color": "#e2e8f0",
                                 "word-break": "break-word",
                             },
                         ),
@@ -182,6 +181,11 @@ def articulo():
                         spacing=rx.breakpoints(initial="4", md="6"),
                         width="100%",
                         align="start",
+                    ),
+                    background="#070b14",
+                    border="1px solid #1e293b",
+                    border_radius="12px",
+                    padding=rx.breakpoints(initial="1em", md="1.5em"),
                     )
                 ),
 
@@ -190,7 +194,7 @@ def articulo():
                     rx.center(
                         rx.vstack(
                             rx.spinner(size="3"),
-                            rx.text("Cargando artículo..."),
+                            rx.text("Cargando artículo...", color="#cbd5e1"),
                             spacing="3",
                         ),
                         height="60vh",
@@ -216,5 +220,5 @@ def articulo():
 
         show_sidebar=False,
         content_padding=False,
-        background=fondo_publico(),
+        background="#020617",
     ) 

@@ -30,7 +30,19 @@ def footer():
                 rx.cond(
                     SiteConfigState.layout_publico == "revista",
                     "#3f2d1a",
-                    "#0f172a",
+                    rx.cond(
+                        SiteConfigState.layout_publico == "portal",
+                        "#0f172a",
+                        rx.cond(
+                            SiteConfigState.layout_publico == "clasico",
+                            "#1f2937",
+                            rx.cond(
+                                SiteConfigState.layout_publico == "boletin",
+                                "#064e3b",
+                                "#312e81",
+                            ),
+                        ),
+                    ),
                 ),
             ),
         ),
@@ -46,7 +58,19 @@ def footer():
                 rx.cond(
                     SiteConfigState.layout_publico == "revista",
                     "4px solid #c58e4a",
-                    "4px solid #0ea5e9",
+                    rx.cond(
+                        SiteConfigState.layout_publico == "portal",
+                        "4px solid #0ea5e9",
+                        rx.cond(
+                            SiteConfigState.layout_publico == "clasico",
+                            "4px solid #9ca3af",
+                            rx.cond(
+                                SiteConfigState.layout_publico == "boletin",
+                                "4px solid #34d399",
+                                "4px solid #a78bfa",
+                            ),
+                        ),
+                    ),
                 ),
             ),
         ),

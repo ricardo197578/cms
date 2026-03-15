@@ -1,10 +1,20 @@
+import asyncio
+
 import reflex as rx  # Importa la librería principal de Reflex
 # Importa funciones del servicio para obtener y guardar configuración desde la base de datos
 from editorial_cms.services.site_config_service import obtener_config, guardar_config
 
 
 class SiteConfigState(rx.State):  # Define una clase de estado que hereda de rx.State
-    LAYOUTS_DISPONIBLES: tuple[str, ...] = ("minimalista", "blog", "revista", "portal")
+    LAYOUTS_DISPONIBLES: tuple[str, ...] = (
+        "minimalista",
+        "blog",
+        "revista",
+        "portal",
+        "clasico",
+        "boletin",
+        "escenario",
+    )
 
     # 🔹 CONFIGURACIÓN GENERAL  # Comentario: sección de configuración básica del sitio
     site_name: str = "Editorial CMS"  # Nombre del sitio con valor por defecto
@@ -64,7 +74,7 @@ class SiteConfigState(rx.State):  # Define una clase de estado que hereda de rx.
 
 
 
-    def guardar(self):  # Método para guardar la configuración en la base de datos
+    async def guardar(self):  # Método para guardar la configuración en la base de datos
 
         data = {  # Crea un diccionario con todos los valores actuales del estado
             "site_name": self.site_name,  # Nombre actual del sitio
@@ -89,6 +99,9 @@ class SiteConfigState(rx.State):  # Define una clase de estado que hereda de rx.
         guardar_config(data)  # Llama al servicio para guardar el diccionario en la base de datos
 
         self.mensaje = "Configuración guardada correctamente"  # Establece mensaje de éxito
+        yield
+        await asyncio.sleep(2.2)
+        self.mensaje = ""
 
 
 

@@ -107,13 +107,21 @@ def dashboard():
                     align="center",
                 ),
                 rx.text(
-                    "Elegí el estilo visual del sitio: minimalista, blog, revista o portal.",
+                    "Elegi el estilo visual del sitio y guarda para aplicarlo.",
                     color_scheme="gray",
                     size="2",
                 ),
                 rx.hstack(
                     rx.select(
-                        ["minimalista", "blog", "revista", "portal"],
+                        [
+                            "minimalista",
+                            "blog",
+                            "revista",
+                            "portal",
+                            "clasico",
+                            "boletin",
+                            "escenario",
+                        ],
                         value=SiteConfigState.layout_publico,
                         on_change=SiteConfigState.set_layout_publico,
                         width=rx.breakpoints(initial="100%", md="260px"),

@@ -12,7 +12,7 @@ def AdminLayout(
     content: rx.Component,
     show_sidebar: bool = True,
     content_padding: bool = True,
-    background: str = "var(--gray-2)",
+    background: str | rx.Var = "var(--gray-2)",
 ) -> rx.Component:
     sidebar_component = admin_sidebar() if show_sidebar else rx.box(display="none")
     header_component = admin_header() if show_sidebar else rx.box(display="none")
@@ -57,7 +57,7 @@ def AdminLayout(
         ),
         width="100%",
         background=background,
-        color="var(--gray-12)",
+        color="var(--gray-12)" if show_sidebar else "#e5e7eb",
     )
 
 

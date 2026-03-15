@@ -38,11 +38,23 @@ def banner():
             "linear-gradient(90deg,#2563eb,#1e40af)",
             rx.cond(
                 SiteConfigState.layout_publico == "blog",
-                "linear-gradient(90deg,#334155,#475569)",
+                "linear-gradient(90deg,#1f2937,#334155)",
                 rx.cond(
                     SiteConfigState.layout_publico == "revista",
-                    "linear-gradient(90deg,#8a5a2b,#c58e4a)",
-                    "linear-gradient(90deg,#1d4ed8,#2563eb,#0ea5e9)",
+                    "linear-gradient(90deg,#5d3b20,#8a5a2b)",
+                    rx.cond(
+                        SiteConfigState.layout_publico == "portal",
+                        "linear-gradient(90deg,#123b8a,#1d4ed8,#1e40af)",
+                        rx.cond(
+                            SiteConfigState.layout_publico == "clasico",
+                            "linear-gradient(90deg,#374151,#111827)",
+                            rx.cond(
+                                SiteConfigState.layout_publico == "boletin",
+                                "linear-gradient(90deg,#065f46,#047857)",
+                                "linear-gradient(90deg,#6d28d9,#4c1d95)",
+                            ),
+                        ),
+                    ),
                 ),
             ),
         ),

@@ -1,12 +1,7 @@
 import reflex as rx
 from editorial_cms.components.admin_layout import AdminLayout
 from editorial_cms.components.grilla_articulos import grilla_articulos
-from editorial_cms.components.layout_theme import (
-    ancho_contenido_publico,
-    borde_tarjeta_publica,
-    fondo_publico,
-    radio_tarjeta_publica,
-)
+from editorial_cms.components.layout_theme import ancho_contenido_publico, radio_tarjeta_publica
 from editorial_cms.states.public_state import PublicState
 from editorial_cms.states.site_config_state import SiteConfigState
 from editorial_cms.components.banner import banner
@@ -37,14 +32,14 @@ def articulos():
                         rx.heading(
                             "Artículos", 
                             size=rx.breakpoints(initial="5", md="6"),
-                            color="var(--gray-12)"
+                            color="#f8fafc",
                         ),
                         rx.link(
                             "← Volver",
                             href="/",
                             font_size=rx.breakpoints(initial="sm", md="md"),
-                            color="var(--accent-11)",
-                            _hover={"opacity": "0.8"},
+                            color="#3b82f6",
+                            _hover={"color": "#60a5fa"},
                         ),
 
                         rx.hstack(
@@ -56,6 +51,10 @@ def articulos():
                                 width=rx.breakpoints(initial="100%", md="300px"),
                                 font_size=rx.breakpoints(initial="sm", md="md"),
                                 padding=rx.breakpoints(initial="8px", md="10px"),
+                                color="#f8fafc",
+                                background="#0b1220",
+                                border="1px solid #334155",
+                                _placeholder={"color": "#94a3b8"},
                             ),
                             rx.cond(
                                 PublicState.mostrando_resultados,
@@ -63,6 +62,7 @@ def articulos():
                                     "✕",
                                     size="2",
                                     on_click=PublicState.limpiar_busqueda,
+                                    color_scheme="blue",
                                 ),
                             ),
                         ),
@@ -72,7 +72,7 @@ def articulos():
                             rx.text(
                                 "Resultados para: " + PublicState.busqueda,
                                 font_size=rx.breakpoints(initial="xs", md="sm"),
-                                color="var(--gray-10)",
+                                color="#93c5fd",
                                 margin_top="0.5em",
                             ),
                         ),
@@ -117,7 +117,7 @@ def articulos():
                         rx.heading(
                             "Recientes",
                             size=rx.breakpoints(initial="4", md="5"),
-                            color="var(--gray-12)",
+                            color="#f8fafc",
                         ),
                         rx.foreach(
                             PublicState.recientes,
@@ -126,8 +126,8 @@ def articulos():
                                 href="/articulo/" + post.slug,
                                 on_click=PublicState.iniciar_carga_post,
                                 font_size=rx.breakpoints(initial="sm", md="md"),
-                                color="var(--accent-11)",
-                                _hover={"color": "var(--accent-12)", "text_decoration": "underline"},
+                                color="#93c5fd",
+                                _hover={"color": "#bfdbfe", "text_decoration": "underline"},
                                 display="block",
                                 padding_y="0.5em",
                             ),
@@ -136,7 +136,7 @@ def articulos():
                         rx.heading(
                             "Categorías",
                             size=rx.breakpoints(initial="4", md="5"),
-                            color="var(--gray-12)",
+                            color="#f8fafc",
                         ),
                         rx.cond(
                             PublicState.hay_categoria_activa,
@@ -145,6 +145,7 @@ def articulos():
                                 size="2",
                                 variant="outline",
                                 on_click=PublicState.set_categoria(""),
+                                color_scheme="blue",
                             ),
                         ),
                         rx.foreach(
@@ -160,7 +161,7 @@ def articulos():
                                     color_scheme=rx.cond(
                                         PublicState.categoria_activa == cat.slug,
                                         "blue",
-                                        "gray"
+                                        "slate"
                                     ),
                                     on_click=PublicState.set_categoria(cat.slug),
                                 ),
@@ -184,22 +185,10 @@ def articulos():
             ),
             padding=rx.breakpoints(initial="1.5em", md="2em"),
             max_width=ancho_contenido_publico(),
-            background=rx.cond(
-                SiteConfigState.layout_publico == "minimalista",
-                "var(--gray-1)",
-                "#ffffff",
-            ),
+            background="#070b14",
             border_radius=radio_tarjeta_publica(),
-            border=rx.cond(
-                SiteConfigState.layout_publico == "minimalista",
-                "none",
-                borde_tarjeta_publica(),
-            ),
-            box_shadow=rx.cond(
-                SiteConfigState.layout_publico == "minimalista",
-                "0 1px 3px rgba(0, 0, 0, 0.05)",
-                "0 18px 40px rgba(15, 23, 42, 0.06)",
-            ),
+            border="1px solid #1e293b",
+            box_shadow="0 18px 40px rgba(2, 6, 23, 0.45)",
         ),
 
         # 🔹 FOOTER DEL SITIO
@@ -211,5 +200,5 @@ def articulos():
         ),
         show_sidebar=False,
         content_padding=False,
-        background=fondo_publico(),
+        background="#020617",
     )

@@ -1,10 +1,7 @@
 import reflex as rx
 from editorial_cms.components.admin_layout import AdminLayout
 from editorial_cms.components.grilla_articulos import grilla_articulos
-from editorial_cms.components.layout_theme import (
-    ancho_contenido_publico,
-    fondo_publico,
-)
+from editorial_cms.components.layout_theme import ancho_contenido_publico
 from editorial_cms.states.public_state import PublicState
 from editorial_cms.states.site_config_state import SiteConfigState
 
@@ -23,7 +20,7 @@ def categoria():
             rx.heading(
                 "Categoría: " + PublicState.nombre_categoria_actual,
                 size=rx.breakpoints(initial="5", md="6"),
-                color="var(--gray-12)",
+                color="#f8fafc",
             ),
 
             rx.divider(border_color="var(--gray-6)"),
@@ -31,15 +28,15 @@ def categoria():
                 "← Volver",
                 href="/articulos",
                 font_size=rx.breakpoints(initial="sm", md="md"),
-                color="var(--accent-11)",
-                _hover={"opacity": "0.8"},
+                color="#3b82f6",
+                _hover={"color": "#60a5fa"},
             ),
 
             # 🔹 Listado de posts
             rx.cond(
                 PublicState.posts_categoria,
                 grilla_articulos(PublicState.posts_categoria),
-                rx.heading("No hay artículos en esta categoría"),
+                rx.heading("No hay artículos en esta categoría", color="#cbd5e1"),
             ),
 
             
@@ -50,8 +47,12 @@ def categoria():
             ),
             padding="2em",
             max_width=ancho_contenido_publico(),
+            background="#070b14",
+            border_radius=rx.breakpoints(initial="12px", md="14px"),
+            border="1px solid #1e293b",
+            box_shadow="0 18px 40px rgba(2, 6, 23, 0.45)",
         ),
         show_sidebar=False,
         content_padding=False,
-        background=fondo_publico(),
+        background="#020617",
     )
